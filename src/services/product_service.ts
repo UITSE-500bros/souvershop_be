@@ -1,4 +1,4 @@
-import { pool } from 'src/index';
+import { pool } from "~/utils/pool";
 
 export const getAllProducts = async () => {
   const result = await pool.query('SELECT * FROM product');
