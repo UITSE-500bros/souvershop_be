@@ -1,4 +1,4 @@
-enum paymen_method{
+enum payment_method{
     CREDIT_CARD = 'credit_card',
     CASH = 'cash',
     DIGITAL_WALLET= 'digital_wallet',
@@ -6,4 +6,4 @@ enum paymen_method{
 
 }
 
-export default paymen_method;
+export default payment_method;
