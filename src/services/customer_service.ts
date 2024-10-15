@@ -19,19 +19,21 @@ export class CustomerService {
         return result;
         
     }
-    async createCustomer(customerData: Customer){
+    async createCustomer(customer_name: String,customer_email: String, customer_password: String, customer_address: String){
         // code here{
         const create_at = new Date();
         const update_at = new Date();
-        const { 
-            customer_name, 
-            customer_email, 
-            customer_password, 
-            customer_address,
-        } = customerData;
         const result = await pool.query(
             'INSERT INTO customer (customer_id, customer_name, customer_email, customer_password, time_start_working) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [customer_name, customer_email, customer_password, customer_address, create_at, update_at]
+        );
+        return result.rows[0];
+    }
+    async updateCustomer(customer_id:string, customer_name: String,customer_email: String, customer_password: String, customer_address: String){
+        const update_at = new Date();
+        const result = await pool.query(
+            'INSERT INTO customer (customer_id, customer_name, customer_email, customer_password, customer_address,update_at) VALUES ($1, $2, $3, $4, $5,$6) RETURNING *',
+            [customer_id,customer_name, customer_email, customer_password, customer_address, update_at]
         );
         return result.rows[0];
     }

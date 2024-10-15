@@ -17,18 +17,24 @@ export class CustomerController {
     }
     async register(Response: Response, Request: Request){
         const { customer_name,customer_email, customer_password, customer_address } = Request.body;
-        // const CustomerData = new Customer(customer_name, customer_email, customer_password, customer_address) 
-        // const result = await this.customerService.createCustomer(CustomerData);
-        //return Response.status(200).json(result.rows[0]);
-        
+        const result = await this.customerService.createCustomer(customer_name,customer_email, customer_password, customer_address);
+        return Response.status(200).json(result.rows[0]);
     }
     async update(Response: Response, Request: Request){
-        // code here{
-        
+        const { customer_id, customer_name,customer_email, customer_password, customer_address } = Request.body;
+        if( await this.customerService.getCustomer(customer_email) === null){
+            throw new Error('Customer not found');
+        }
+        const result = await this.customerService.updateCustomer(customer_id, customer_name,customer_email, customer_password, customer_address);
+        return Response.status(200).json(result.rows[0]);
     }
     async delete(Response: Response, Request: Request){
-        // code here{
-        
+        const { customer_id,customer_email } = Request.body;
+        if( await this.customerService.getCustomer(customer_email) === null){
+            throw new Error('Customer not found');
+        }
+        const result = await this.customerService.deleteCustomer(customer_id);
+        return Response.status(200).json(result.rows[0]);
     }
     
 }
