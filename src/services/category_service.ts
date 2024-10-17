@@ -1,9 +1,13 @@
+import Category from "~/models/category";
 import { pool } from "~/utils/pool";
 
-export class CategoryService {
-    async getAllCategories() {
+class CategoryService {
+    async getAllCategories(): Promise<Category[] | null> {
         const result = await pool.query('SELECT * FROM category');
-        return result.rows;
+        if (result.rows.length === 0) {
+            return null;
+        }
+        return result.rows as Category[];
     }
 
     async getCategoryById(categoryId: number) {
@@ -41,3 +45,6 @@ export class CategoryService {
         return result.rows[0];
     }
 }
+
+const categoryService = new CategoryService;
+export default categoryService

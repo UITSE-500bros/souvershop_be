@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { CategoryController } from '~/controllers/category_controller';
-import { CategoryService } from '~/services/category_service';
+import categoryController from '~/controllers/category_controller';
 
 const router = Router();
-const categoryController = new CategoryController(new CategoryService());
 
 router.get('/category', categoryController.getAllCategories);
 router.get('/category/:category_id', categoryController.getCategoryById);
