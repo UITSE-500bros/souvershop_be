@@ -1,8 +1,6 @@
-import Customer from "~/models/customer";
-import ProductList from "~/models/product_list";
 import { pool } from "~/utils/pool";
 
-export class CustomerService {
+class CustomerService {
     async getCustomer(customer_email: string){
         // code here{
         const result = await pool.query('SELECT customer FROM customer WHERE customer_email = $1', [customer_email]);
@@ -45,3 +43,5 @@ export class CustomerService {
         return result.rows[0];
     }
 }
+const customerService = new CustomerService;
+export default customerService
