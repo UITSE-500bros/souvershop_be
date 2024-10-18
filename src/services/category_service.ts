@@ -1,13 +1,13 @@
-import Category from "~/models/category";
 import { pool } from "~/utils/pool";
 
 class CategoryService {
-    async getAllCategories(): Promise<Category[] | null> {
+    
+    async getAllCategories() {
         const result = await pool.query('SELECT * FROM category');
         if (result.rows.length === 0) {
             return null;
         }
-        return result.rows as Category[];
+        return result.rows;
     }
 
     async getCategoryById(categoryId: number) {

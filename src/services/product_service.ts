@@ -1,6 +1,7 @@
 import { pool } from "~/utils/pool";
 
-export class ProductService {
+class ProductService {
+    
     async getProduct(product_id: string){
         const result = await pool.query('SELECT * FROM product WHERE product_id = $1', [product_id]);
         if (result.rows.length === 0) {
@@ -62,3 +63,6 @@ export class ProductService {
         return result.rows[0];
     }
 }
+
+const productService = new ProductService;
+export default productService

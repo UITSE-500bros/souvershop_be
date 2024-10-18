@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { ProductController } from '~/controllers/product_controller';
-import { ProductService } from '~/services/product_service';
+import productController from '~/controllers/product_controller';
 
 const router = Router();
-const productController = new ProductController(new ProductService());
 
 router.get('/product', productController.getAllProducts);
 router.get('/product/:product_id', productController.getProductById);

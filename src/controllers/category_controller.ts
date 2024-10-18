@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import CategoryService from '~/services/category_service';
 
 class CategoryController {
-  
 
   async getAllCategories(req: Request,Response: Response) {
     try {
