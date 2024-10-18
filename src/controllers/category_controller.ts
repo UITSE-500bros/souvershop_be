@@ -10,6 +10,7 @@ class CategoryController {
       return Response.status(200).json(categories);
     } catch (err) {
       console.log(err);
+      return Response.status(500).json({ error: 'Internal Server Error' });
     }
   }
 

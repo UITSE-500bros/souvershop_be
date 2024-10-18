@@ -8,6 +8,7 @@ export class ProductController {
       const products = await ProductService.getAllProducts();
       return Response.status(200).json(products);
     } catch (err) {
+      console.log(err);
       return Response.status(500).json({ error: 'Failed to retrieve products' });
     }
   }
