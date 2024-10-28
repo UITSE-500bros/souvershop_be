@@ -1,5 +1,5 @@
 import paymen_method from "~/utils/payment_method";
-import ProductList from "./product_list";
+import ProductList from "./product_list.model";
 export default class Receipt{
     receipt_id: string;
     customer_id: string;

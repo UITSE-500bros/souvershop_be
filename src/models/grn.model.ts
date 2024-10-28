@@ -1,4 +1,4 @@
-import ProductList from "./product_list";
+import ProductList from "./product_list.model";
 
 export default class GRN {
     grn_id: string;
