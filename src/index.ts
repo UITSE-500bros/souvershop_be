@@ -1,7 +1,7 @@
 import express, { Express, Request, Response, json } from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import router from './routes/category_route'
+import router from './routes/category.route'
 dotenv.config()
 const app: Express = express()
 const PORT: number = 8000
