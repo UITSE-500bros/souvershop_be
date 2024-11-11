@@ -3,7 +3,7 @@ import ProductService from '~/services/product.service';
 
 export class ProductController {
 
-  async getAllProducts(Request: Request, Response: Response): Promise<Response> {
+  async getAllProducts(Response: Response): Promise<Response> {
     try {
       const products = await ProductService.getAllProducts();
       return Response.status(200).json(products);
@@ -27,22 +27,24 @@ export class ProductController {
       const { 
         product_id, 
         category_id, 
+        product_name,
         product_image, 
         product_describe, 
         product_selling_price, 
         product_import_price, 
-        product_status, 
+        product_quantity, 
         is_sale, 
         percentage_sale 
       } = Request.body;
       const product = await ProductService.createProduct(
         product_id, 
         category_id, 
+        product_name,
         product_image, 
         product_describe, 
         product_selling_price, 
         product_import_price, 
-        product_status, 
+        product_quantity, 
         is_sale, 
         percentage_sale
       );
@@ -57,22 +59,24 @@ export class ProductController {
     try {
       const { 
         category_id, 
+        product_name,
         product_image, 
         product_describe, 
         product_selling_price, 
         product_import_price, 
-        product_status, 
+        product_quantity, 
         is_sale, 
         percentage_sale 
       } = Request.body;
       const product = await ProductService.updateProduct(
         product_id, 
         category_id, 
+        product_name,
         product_image, 
         product_describe, 
         product_selling_price, 
         product_import_price, 
-        product_status, is_sale, 
+        product_quantity, is_sale, 
         percentage_sale
       );
       return Response.status(200).json(product);
@@ -90,6 +94,25 @@ export class ProductController {
       return Response.status(404).json({ error: err.message });
     }
   }
+
+  async getAllInventories(Response: Response): Promise<Response> {
+		try {
+			const inventories = await ProductService.getAllInventories();
+			return Response.status(200).json(inventories);
+		} catch (err) {
+			return Response.status(500).json({ error: 'Failed to retrieve inventories' });
+		}
+	}
+
+	async getInventoryByProductId(Request: Request, Response: Response): Promise<Response> {
+		const { product_id } = Request.params;
+		try {
+			const inventory = await ProductService.getInventoryByProductId(product_id);
+			return Response.status(200).json(inventory);
+		} catch (err: any) {
+			return Response.status(404).json({ error: err.message });
+		}
+	}
 }
 
 const productController = new ProductController;
