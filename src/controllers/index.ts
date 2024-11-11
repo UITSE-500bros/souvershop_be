@@ -1,5 +1,5 @@
-import customerController from "./customer_controller";
+import AuthController from './auth.controller';
 
 export {
-    customerController
+    AuthController
 }
