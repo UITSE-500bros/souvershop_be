@@ -3,7 +3,7 @@ import { pool, supabase } from "~/utils/pool";
 
 class UserService {
     async createUser(user: User) {
-        const { error } = await supabase
+        const { data, error }: { data: { id: string } | null, error: any } = await supabase
             .from('user')
             .insert({
                 user_name: user.name,
@@ -21,10 +21,11 @@ class UserService {
                 accessToken: user.accessToken,
                 verifyToken: user.verifyToken
             })
+            .single();
         if (error) {
             return error.message;
         }
-        return 'User created';
+        return { ...user, id: data?.id };
 
 
     }
@@ -42,6 +43,30 @@ class UserService {
         return user;
 
     }
+
+    async updateUserTokens(user: User, tokens: { accessToken?: string; resetPasToken?: string; verifyToken?: string }) {
+        try {
+            const { error } = await supabase
+                .from('user')
+                .update({
+                    accessToken: tokens.accessToken,
+                    resetPasToken: tokens.resetPasToken,  
+                    verifyToken: tokens.verifyToken   
+                })
+                .eq('user_id', user.id);
+    
+            if (error) {
+                console.error("Error updating tokens:", error);
+                return null; // or handle the error as needed
+            }
+    
+            return "Tokens updated successfully";
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            return null; // handle unexpected errors
+        }
+    }
+    
 }
 
 export default new UserService();

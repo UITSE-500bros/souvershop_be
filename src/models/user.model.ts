@@ -1,7 +1,7 @@
 import ProductList from "./product_list.model";
 
 class User {
-    id: string | null = null;
+    id?: string | null = null;
     name: string;
     email: string;
     password: string | null = null;
@@ -16,6 +16,7 @@ class User {
     resetPasToken: string | null = null;
     accessToken: string | null = null;
     verifyToken: string | null = null;
+    account_status: number | null = null;
 
     constructor({
         id = null,
