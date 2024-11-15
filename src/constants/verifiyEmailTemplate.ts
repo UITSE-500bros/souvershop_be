@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 config()
 
-export const mailTemplate = (token: string) =>
+const mailTemplate = (token: string) =>
     ` 
     <div style="padding-left:30%;padding-right:30%;padding-top:0">
       <h1 style="font-size:1.875rem;line-height:2.25rem;font-weight:600">Verify your email</h1>
@@ -27,3 +27,5 @@ export const mailTemplate = (token: string) =>
       <p style="margin-bottom:16px;margin-top:24px">Cheers,</p>
       <p style="margin-bottom:16px">The SouverShop Team</p>
   </div>`
+
+export default mailTemplate;

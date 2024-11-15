@@ -17,10 +17,11 @@ class MailService {
             from: process.env.PROJECT_MAIL,
             to: email,
             subject: 'Verify your email',
+            html: template
             
 
         });
     }
 }
-
-export default new MailService();
+const mailService = new MailService();
+export default mailService;

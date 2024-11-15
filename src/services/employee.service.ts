@@ -30,3 +30,5 @@ class EmployeeService {
 
     }
 }
+const employeeService = new EmployeeService();
+export default employeeService;

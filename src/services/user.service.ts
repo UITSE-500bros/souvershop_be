@@ -1,41 +1,61 @@
 import { User } from "~/models";
-import { pool, supabase } from "~/utils/pool";
+import { supabase } from "~/utils";
 
 class UserService {
-    async createUser(user: User) {
-        const { data, error }: { data: { id: string } | null, error: any } = await supabase
-            .from('user')
-            .insert({
-                user_name: user.name,
-                user_email: user.email,
-                user_password: user.password,
-                role_id: user.role,
-                created_at: user.created_at,
-                update_at: user.updated_at,
-                address: user.address,
-                product_list: user.product_list,
-                favourite_list: user.favourite_list,
-                salary: user.salary,
-                phone: user.phone,
-                resetPasToken: user.resetPasToken,
-                accessToken: user.accessToken,
-                verifyToken: user.verifyToken
-            })
-            .single();
+    async updateUser(userId: any, arg1: { verify: any; verifiedEmailToken: string; }) {
+        const {data, error} = await supabase.from('user')
+                            .update({
+                                account_status: arg1.verify,
+                                verifyToken: arg1.verifiedEmailToken
+                            })
+                            .eq('user_id', userId);
         if (error) {
             return error.message;
         }
-        return { ...user, id: data?.id };
+    }
+    async createUser(user: User):Promise<User | null> {
+        console.log(user);
+        const { data, error } = await supabase
+            .from('user')
+            .insert({
+                user_name: user.user_name,
+                user_email: user.user_email,
+                user_password: user.user_password,
+                user_phoneNumber: user.user_phoneNumber,
+                user_role: user.user_role,
+                user_accountStatus: user.account_status,
+                created_at: user.created_at,
+                updated_at: user.updated_at
+            })
+            .single();
+        if (error) {
+            console.log(error);
+            return null;
+        }
+        console.log(user);
+        return user;
 
 
     }
 
-    async getUserByEmail(email: string) {
-        
+    async getUserByEmail(email: string):Promise<User | null> {
         let { data: user, error } = await supabase
             .from('user')
             .select('*')
             .eq('user_email', email)
+            .single()
+        if (error) {
+            return null;
+        }
+        return user;
+
+    }
+    async getUserByID(user_id: string) {
+        
+        let { data: user, error } = await supabase
+            .from('user')
+            .select('*')
+            .eq('user_id', user_id)
             .single()
         if (error) {
             return error.message;
@@ -53,7 +73,7 @@ class UserService {
                     resetPasToken: tokens.resetPasToken,  
                     verifyToken: tokens.verifyToken   
                 })
-                .eq('user_id', user.id);
+                .eq('user_id', user.user_id);
     
             if (error) {
                 console.error("Error updating tokens:", error);
@@ -68,5 +88,6 @@ class UserService {
     }
     
 }
+const userService = new UserService();
 
-export default new UserService();
+export default userService;

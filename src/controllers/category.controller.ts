@@ -54,5 +54,5 @@ class CategoryController {
   }
 }
 
-const categoryController = new CategoryController;
+const categoryController = new CategoryController();
 export default categoryController;

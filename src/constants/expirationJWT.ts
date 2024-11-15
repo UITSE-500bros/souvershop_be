@@ -1,6 +1,6 @@
 import { config } from 'dotenv'
 config()
-export const expirationJWT: {
+const expirationJWT: {
   [key: string]: string
 } = {
   forgotPassword: process.env.EXPIRE_FORGOT_PASSWORD as string,
@@ -8,3 +8,4 @@ export const expirationJWT: {
   refreshToken: process.env.EXPIRE_REFRESH_TOKEN as string,
   accessToken: process.env.EXPIRE_ACCESS_TOKEN as string
 }
+export default expirationJWT

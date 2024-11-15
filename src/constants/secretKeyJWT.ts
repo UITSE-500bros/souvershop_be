@@ -1,6 +1,6 @@
 import { config } from 'dotenv'
 config()
-export const secretKeyJWT: {
+const secretKeyJWT: {
   [key: string]: string
 } = {
   forgotPassword: process.env.FORGOT_PASSWORD_SECRET as string,
@@ -8,3 +8,4 @@ export const secretKeyJWT: {
   refreshToken: process.env.REFRESH_TOKEN_SECRET as string,
   accessToken: process.env.ACCESS_TOKEN_SECRET as string
 }
+export default secretKeyJWT

@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import grnController from '~/controllers/grn.controller';
+import {grnController} from '~/controllers';
 
-const router = Router();
+const grnRouter = Router();
 
-router.get('/grn', grnController.getAllGRNs);
-router.get('/grn/:grn_id', grnController.getGRNById);
-router.post('/grn', grnController.createGRN);
-router.put('/grn/:grn_id', grnController.updateGRN);
-router.delete('/grn/:grn_id', grnController.deleteGRN);
+grnRouter.get('/grn', grnController.getAllGRNs);
+grnRouter.get('/grn/:grn_id', grnController.getGRNById);
+grnRouter.post('/grn', grnController.createGRN);
+grnRouter.put('/grn/:grn_id', grnController.updateGRN);
+grnRouter.delete('/grn/:grn_id', grnController.deleteGRN);
 
-router.get('/grn/date/:date', grnController.getGRNsByDate);
-router.get('/grn/month/:year/:month', grnController.getGRNsByMonth);
-router.get('/grn/year/:year', grnController.getGRNsByYear);
+grnRouter.get('/grn/date/:date', grnController.getGRNsByDate);
+grnRouter.get('/grn/month/:year/:month', grnController.getGRNsByMonth);
+grnRouter.get('/grn/year/:year', grnController.getGRNsByYear);
 
-export default router;
+export default grnRouter;
