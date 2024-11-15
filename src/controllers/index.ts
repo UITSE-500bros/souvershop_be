@@ -1,5 +1,10 @@
-import customerController from "./customer_controller";
-
+import AuthController from './auth.controller';
+import categoryController from './category.controller';
+import productController from './product.controller';
+import grnController from './grn.controller';
 export {
-    customerController
+    AuthController,
+    categoryController,
+    productController,
+    grnController
 }

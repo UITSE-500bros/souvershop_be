@@ -1,4 +1,4 @@
-import paymen_method from "~/utils/payment_method";
+import {PaymentMethod} from "~/utils";
 import ProductList from "./product_list.model";
 export default class Receipt{
     receipt_id: string;
@@ -7,7 +7,7 @@ export default class Receipt{
     create_at: Date;
     update_at: Date;
     creater_id: string;
-    payment_method: paymen_method;
+    payment_method: PaymentMethod;
     product_list: ProductList[];
     constructor(receipt_id: string, 
         customer_id: string, 
@@ -15,7 +15,7 @@ export default class Receipt{
         create_at: Date, 
         update_at: Date, 
         creater_id: string,
-        payment_method: paymen_method,
+        payment_method: PaymentMethod,
         product_list: ProductList[]) { 
         this.receipt_id = receipt_id;
         this.customer_id = customer_id;

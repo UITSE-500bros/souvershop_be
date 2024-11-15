@@ -6,7 +6,6 @@ class CategoryController {
   async getAllCategories(req: Request,Response: Response) {
     try {
       const categories = await CategoryService.getAllCategories();
-      console.log(categories)
       return Response.status(200).json(categories);
     } catch (err) {
       console.log(err);
@@ -55,5 +54,5 @@ class CategoryController {
   }
 }
 
-const categoryController = new CategoryController;
+const categoryController = new CategoryController();
 export default categoryController;

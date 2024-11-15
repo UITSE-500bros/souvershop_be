@@ -1,5 +1,5 @@
-import { pool } from "~/utils/pool";
-import ProductList from "~/models/product_list.model";
+import {ProductList} from "~/models";
+import { pool } from "~/utils";
 
 class GRNService {
     async getAllGRNs() {

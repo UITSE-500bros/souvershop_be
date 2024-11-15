@@ -115,5 +115,5 @@ export class ProductController {
 	}
 }
 
-const productController = new ProductController;
+const productController = new ProductController();
 export default productController;
