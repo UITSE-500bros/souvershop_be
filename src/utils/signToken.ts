@@ -1,8 +1,7 @@
 
 import { config } from 'dotenv'
 import jwt from 'jsonwebtoken'
-import { secretKeyJWT } from '~/constants/secretKeyJWT';
-import { expirationJWT } from '~/constants/expirationJWT';
+import { expirationJWT,secretKeyJWT } from '~/constants';
 config()
 
 export const signToken = (action: { type: string; payload: { _id: string; user_role: string } }) => {

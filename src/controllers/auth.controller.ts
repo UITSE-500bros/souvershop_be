@@ -32,7 +32,6 @@ class AuthController {
         user_password: hashedPassword,
         user_phoneNumber: phoneNumber,
         user_role: 14,
-        account_status: AccountStatus.pedingVerify,
         created_at: new Date(),
         updated_at: new Date()
       }
@@ -198,7 +197,6 @@ class AuthController {
         user_phoneNumber: phone,
         user_role: 14,
         user_password: hashedPassword,
-        account_status: AccountStatus.pedingVerify,
         created_at: new Date(),
         updated_at: new Date()
       }

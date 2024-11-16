@@ -23,7 +23,6 @@ class UserService {
                 user_password: user.user_password,
                 user_phoneNumber: user.user_phoneNumber,
                 user_role: user.user_role,
-                user_accountStatus: user.account_status,
                 created_at: user.created_at,
                 updated_at: user.updated_at
             })
