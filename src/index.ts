@@ -2,10 +2,9 @@ import express, { Express, Request, Response, json } from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import router from './routes'
-import { createClient } from '@supabase/supabase-js'
 dotenv.config()
 const app: Express = express()
-const PORT: number = 8000
+const PORT = process.env.PORT || 8000;
 
 dotenv.config()
 app.use(json())

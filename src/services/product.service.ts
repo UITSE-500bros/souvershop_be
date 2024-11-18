@@ -1,4 +1,4 @@
-import { pool } from "~/utils";
+import { pool } from "../utils";
 
 class ProductService {
     

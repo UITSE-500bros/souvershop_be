@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import GRNService from '~/services/grn.service';
+import GRNService from '../services/grn.service';
 
 class GRNController {
     private readonly EDIT_TIME_LIMIT_MINUTES = 15;

@@ -1,21 +1,21 @@
-import { User } from "~/models";
-import { supabase } from "~/utils";
+import { User } from "../models";
+import { supabase } from "../utils";
 
 class UserService {
-    async updateUser(userId: any, arg1: { verify: any; verifiedEmailToken: string; }) {
-        const {data, error} = await supabase.from('user')
-                            .update({
-                                account_status: arg1.verify,
-                                verifyToken: arg1.verifiedEmailToken
-                            })
-                            .eq('user_id', userId);
-        if (error) {
-            return error.message;
-        }
-    }
+    // async updateUser(userId: any, arg1: { verify: any; verifiedEmailToken: string; }) {
+    //     const { error} = await supabase.from('user')
+    //                         .update({
+    //                             account_status: arg1.verify,
+    //                             verifyToken: arg1.verifiedEmailToken
+    //                         })
+    //                         .eq('user_id', userId);
+    //     if (error) {
+    //         return error.message;
+    //     }
+    // }
     async createUser(user: User):Promise<User | null> {
         console.log(user);
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('user')
             .insert({
                 user_name: user.user_name,

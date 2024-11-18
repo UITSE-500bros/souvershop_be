@@ -22,7 +22,7 @@ const authorizeRole = (allowedRoles: string[]) => {
             return res.status(403).json({ message: "You don't have the required permissions." });
         }
 
-        next(); // User is authorized; proceed to the controller
+        return next(); // User is authorized; proceed to the controller
     };
 };
 

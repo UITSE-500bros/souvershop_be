@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {grnController} from '~/controllers';
+import {grnController} from '../controllers';
 
 const grnRouter = Router();
 

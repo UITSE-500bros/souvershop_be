@@ -1,5 +1,5 @@
-import { User } from "~/models";
-import { pool } from "~/utils/pool";
+import { User } from "../models";
+import { pool } from "../utils/pool";
 
 class EmployeeService {
     async getEmployee() {

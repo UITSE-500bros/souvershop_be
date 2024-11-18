@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import CategoryService from '~/services/category.service';
+import CategoryService from '../services/category.service';
 
 class CategoryController {
 
@@ -9,6 +9,7 @@ class CategoryController {
       return Response.status(200).json(categories);
     } catch (err) {
       console.log(err);
+      return Response.status(500).json({ error: 'Failed to get categories' });
     }
   }
 

@@ -1,4 +1,4 @@
-import {PaymentMethod} from "~/utils";
+import {PaymentMethod} from "../utils";
 import ProductList from "./product_list.model";
 export default class Receipt{
     receipt_id: string;
