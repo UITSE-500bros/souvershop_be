@@ -16,30 +16,16 @@ class ProductService {
     }
 
     async createProduct(
-        product_id: string,
         category_id: number,
-        product_name:string,
-        product_image: string[],
-        product_describe: string,
-        product_selling_price: number,
-        product_import_price: number,
-        product_quantity: number,
-        is_sale: boolean,
-        percentage_sale: number
+        product_name: string,
+        product_import_price: number
     ) {
         const result = await pool.query(
-            'INSERT INTO product (product_id, category_id, product_name, product_image, product_describe, product_selling_price, product_import_price, product_quantity, is_sale, percentage_sale, NOW(), NOW()) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *',
+            'INSERT INTO product (category_id, product_name, product_import_price, product_selling_price, product_quantity, create_at, update_at) VALUES ($1, $2, $3, ROUND((($3 * 1.25) / 1000)) * 1000, 0, NOW(), NOW()) RETURNING *',
             [
-                product_id, 
                 category_id, 
                 product_name, 
-                product_image, 
-                product_describe, 
-                product_selling_price, 
-                product_import_price, 
-                product_quantity, 
-                is_sale, 
-                percentage_sale
+                product_import_price
             ]
         );
         return result.rows[0]; 
