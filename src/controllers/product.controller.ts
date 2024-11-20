@@ -24,29 +24,15 @@ export class ProductController {
 
   async createProduct(Request: Request, Response: Response): Promise<Response> {
     try {
-      const { 
-        product_id, 
+      const {
         category_id, 
-        product_name,
-        product_image, 
-        product_describe, 
-        product_selling_price, 
-        product_import_price, 
-        product_quantity, 
-        is_sale, 
-        percentage_sale 
+        product_name, 
+        product_import_price
       } = Request.body;
       const product = await ProductService.createProduct(
-        product_id, 
         category_id, 
         product_name,
-        product_image, 
-        product_describe, 
-        product_selling_price, 
-        product_import_price, 
-        product_quantity, 
-        is_sale, 
-        percentage_sale
+        product_import_price
       );
       return Response.status(201).json(product);
     } catch (err: any) {
