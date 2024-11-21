@@ -21,11 +21,12 @@ class ProductService {
         product_import_price: number
     ) {
         const result = await pool.query(
-            'INSERT INTO product (category_id, product_name, product_import_price, product_selling_price, product_quantity, create_at, update_at) VALUES ($1, $2, $3, ROUND((($3 * 1.25) / 1000)) * 1000, 0, NOW(), NOW()) RETURNING *',
+            'INSERT INTO product (category_id, product_name, product_import_price, product_selling_price, product_quantity, create_at, update_at) VALUES ($1, $2, $3, $4, 0, NOW(), NOW()) RETURNING *',
             [
                 category_id, 
                 product_name, 
-                product_import_price
+                product_import_price,
+                Math.round(product_import_price * 1.25)
             ]
         );
         return result.rows[0]; 
