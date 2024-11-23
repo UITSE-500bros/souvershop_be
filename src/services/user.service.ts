@@ -14,27 +14,22 @@ class UserService {
     //     }
     // }
     async createUser(user: User):Promise<User | null> {
-        console.log(user);
         const { error } = await supabase
             .from('user')
             .insert({
                 user_name: user.user_name,
                 user_email: user.user_email,
                 user_password: user.user_password,
-                user_phoneNumber: user.user_phoneNumber,
-                user_role: user.user_role,
-                created_at: user.created_at,
-                updated_at: user.updated_at
+                user_phone_number: user.user_phoneNumber,
+                create_at: user.created_at,
+                update_at: user.updated_at
             })
             .single();
         if (error) {
             console.log(error);
             return null;
         }
-        console.log(user);
         return user;
-
-
     }
 
     async getUserByEmail(email: string):Promise<User | null> {
