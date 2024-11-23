@@ -4,6 +4,7 @@ import { mailTemplate } from '../constants';
 import { User } from '../models';
 import { mailService, userService } from '../services';
 import { signToken } from '../utils';
+import passport from 'passport';
 config()
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -211,5 +212,17 @@ class AuthController {
   //     return res.status(400).json({ message: 'Error creating user' });
   //   }
   // }
+
+  async googleLogin(req: Request, res: Response, next: Function) {
+    
+  
+    passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next);
+
+      
+  }
+  async googleCallback(req: Request, res: Response) {
+
+  }
+  
 }
 export default new AuthController();
