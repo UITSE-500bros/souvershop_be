@@ -12,13 +12,36 @@ class GRNController {
         return diffInMinutes <= this.EDIT_TIME_LIMIT_MINUTES;
     }
 
-    async getAllGRNs(res: Response) {
+    async getAllGRNs(req: Request, res: Response): Promise<Response> {
         try {
-            const grns = await GRNService.getAllGRNs();
+            const { year, month, day } = req.query;
+            
+            if (year && isNaN(Number(year))) {
+                return res.status(400).json({ error: 'Invalid year format' });
+            }
+            if (month && (isNaN(Number(month)) || Number(month) < 1 || Number(month) > 12)) {
+                return res.status(400).json({ error: 'Invalid month format' });
+            }
+            if (day && (isNaN(Number(day)) || Number(day) < 1 || Number(day) > 31)) {
+                return res.status(400).json({ error: 'Invalid day format' });
+            }
+
+            let grns: any;
+            
+            if (year && month && day) {
+                grns = await GRNService.getGRNsByDate(Number(year), Number(month), Number(day));
+            } else if (year && month) {
+                grns = await GRNService.getGRNsByMonth(Number(year), Number(month));
+            } else if (year) {
+                grns = await GRNService.getGRNsByYear(Number(year));
+            } else {
+                grns = await GRNService.getAllGRNs();
+            }
+
             return res.status(200).json(grns);
-        } catch (err) {
-            console.log(err);
-            return res.status(500).json({ error: 'Failed to fetch GRNs' });
+        } catch (err: any) {
+            console.error(err);
+            return res.status(500).json({ error: err.message });
         }
     }
 
@@ -29,36 +52,6 @@ class GRNController {
             return res.status(200).json(grn);
         } catch (err: any) {
             return res.status(404).json({ error: err.message });
-        }
-    }
-
-    async getGRNsByDate(req: Request, res: Response): Promise<Response> {
-        const { date } = req.params;
-        try {
-            const grns = await GRNService.getGRNsByDate(date);
-            return res.status(200).json(grns);
-        } catch (err: any) {
-            return res.status(500).json({ error: err.message });
-        }
-    }
-
-    async getGRNsByMonth(req: Request, res: Response): Promise<Response> {
-        const { year, month } = req.params; 
-        try {
-            const grns = await GRNService.getGRNsByMonth(parseInt(year), parseInt(month));
-            return res.status(200).json(grns);
-        } catch (err: any) {
-            return res.status(500).json({ error: err.message });
-        }
-    }
-
-    async getGRNsByYear(req: Request, res: Response): Promise<Response> {
-        const { year } = req.params; 
-        try {
-            const grns = await GRNService.getGRNsByYear(parseInt(year));
-            return res.status(200).json(grns);
-        } catch (err: any) {
-            return res.status(500).json({ error: err.message });
         }
     }
 
