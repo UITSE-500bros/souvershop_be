@@ -23,12 +23,14 @@ class GRNService {
         return result.rows[0];
     }
 
-    async getGRNsByDate(date: string) {
+    async getGRNsByDate(year: number, month: number, day: number) {
         const result = await pool.query(
             `SELECT * FROM grn 
-            WHERE DATE(created_at) = DATE($1)
+            WHERE EXTRACT(YEAR FROM created_at) = $1 
+            AND EXTRACT(MONTH FROM created_at) = $2
+            AND EXTRACT(DAY FROM created_at) = $3
             ORDER BY created_at DESC`,
-            [date]
+            [year, month, day]
         );
         return result.rows;
     }
