@@ -6,13 +6,13 @@ info:
   title: Swagger souvershop
   license:
     name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
-  - url: 'https://souvershop-ff3c13f9139a.herokuapp.com/api/'
+  - url: "https://souvershop-ff3c13f9139a.herokuapp.com/api/"
 tags:
   - name: auth
     description: Auth APIs
-  - name : product
+  - name: product
     description: Product APIs
   - name: user
     description: User APIs
@@ -24,7 +24,7 @@ tags:
     description: Review APIs
   - name: category
     description: Category APIs
-  
+
 paths:
   /auth/login:
     post:
@@ -51,7 +51,7 @@ paths:
                 - user_password
         required: true
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
@@ -62,8 +62,8 @@ paths:
                     type: string
                     format: string
                   user:
-                    $ref: '#/components/schemas/user'
-        '400':
+                    $ref: "#/components/schemas/user"
+        "400":
           description: Invalid email/password supplied
   /auth/register:
     post:
@@ -102,7 +102,7 @@ paths:
                 - user_address
         required: true
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
@@ -113,15 +113,15 @@ paths:
                     type: string
                     format: string
                   user:
-                    $ref: '#/components/schemas/user'
-        '400':
+                    $ref: "#/components/schemas/user"
+        "400":
           description: Invalid email/password supplied
   /auth/login/federated/google:
     get:
       tags:
-          - auth
+        - auth
       responses:
-        '200':
+        "200":
           description: successful operation
   /category:
     get:
@@ -133,15 +133,15 @@ paths:
       security:
         - api_key: []
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/category'
-        '400':
+                  $ref: "#/components/schemas/category"
+        "400":
           description: Invalid request
     post:
       tags:
@@ -164,13 +164,97 @@ paths:
                 - category_name
         required: true
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/category'
-        '400':
+                $ref: "#/components/schemas/category"
+        "400":
+          description: Invalid request
+  /category/{category_id}:
+    get:
+      tags:
+        - category
+      summary: Get category by id
+      description: Get category by id
+      operationId: getCategoryById
+      security:
+        - api_key: []
+      parameters:
+        - name: category_id
+          in: path
+          description: ID of category to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/category"
+        "400":
+          description: Invalid request
+    put:
+      tags:
+        - category
+      summary: Update category by id
+      description: Update category by id
+      operationId: updateCategoryById
+      security:
+        - api_key: []
+      parameters:
+        - name: category_id
+          in: path
+          description: ID of category to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                  format: string
+              required:
+                - category_name
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/category"
+        "400":
+          description: Invalid request
+    delete:
+      tags:
+        - category
+      summary: Delete category by id
+      description: Delete category by id
+      operationId: deleteCategoryById
+      security:
+        - api_key: []
+      parameters:
+        - name: category_id
+          in: path
+          description: ID of category to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      responses:
+        "200":
+          description: successful operation
+        "400":
           description: Invalid request
   /product:
     post:
@@ -212,18 +296,302 @@ paths:
                 - product_category
         required: true
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
-        '400':
+                $ref: "#/components/schemas/product"
+        "400":
+          description: Invalid request
+    get:
+      tags:
+        - product
+      summary: Get all products
+      description: Get all products
+      operationId: getProducts
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/product"
+        "400":
+          description: Invalid request
+  /product/{product_id}:
+    get:
+      tags:
+        - product
+      summary: Get product's detail by id
+      description: Get product by id
+      operationId: getProductById
+      security:
+        - api_key: []
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
+        "400":
+          description: Invalid request
+    put:
+      tags:
+        - product
+      summary: Update product's detail by id
+      description: Update product by id
+      operationId: updateProductById
+      security:
+        - api_key: []
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_name:
+                  type: string
+                  format: string
+                product_description:
+                  type: string
+                  format: string
+                product_price:
+                  type: number
+                  format: float
+                product_quantity:
+                  type: number
+                  format: integer
+                product_image:
+                  type: string
+                  format: string
+                product_category:
+                  type: number
+                  format: integer
+              required:
+                - product_name
+                - product_description
+                - product_price
+                - product_quantity
+                - product_image
+                - product_category
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
+        "400":
+          description: Invalid request
+    delete:
+      tags:
+        - product
+      summary: Delete product by id
+      description: Delete product by id
+      operationId: deleteProductById
+      security:
+        - api_key: []
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      responses:
+        "200":
+          description: successful
+  /grn:
+    post:
+      tags:
+        - grn
+      summary: Create a new GRN
+      description: Create a new GRN
+      operationId: createGrn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grn_total:
+                  type: number
+                  format: float
+                product_list:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/product_list"
+              required:
+                - grn_total
+                - product_list
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/grn"
+        "400":
+          description: Invalid request
+    get:
+      tags:
+        - grn
+      summary: Get all GRNs
+      description: Get all GRNs with optional filtering by year and month
+      operationId: getGrns
+      security:
+        - api_key: []
+      parameters:
+        - name: year
+          in: query
+          description: Filter GRNs by year
+          required: false
+          schema:
+            type: integer
+            example: 2000
+            minimum: 1990
+            maximum: 2024
+        - name: month
+          in: query
+          description: Filter GRNs by month
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/grn"
+        "400":
+          description: Invalid request
+
+  /grn/{grn_id}:
+    get:
+      tags:
+        - grn
+      summary: Get GRN by id
+      description: Get GRN by id
+      operationId: getGrnById
+      security:
+        - api_key: []
+      parameters:
+        - name: grn_id
+          in: path
+          description: ID of GRN to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/grn"
+        "400":
+          description: Invalid request
+    put:
+      tags:
+        - grn
+      summary: Update GRN by id
+      description: Update GRN by id
+      operationId: updateGrnById
+      security:
+        - api_key: []
+      parameters:
+        - name: grn_id
+          in: path
+          description: ID of GRN to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grn_date:
+                  type: string
+                  format: date
+                grn_total:
+                  type: number
+                  format: float
+                grn_status:
+                  type: string
+                  format: string
+              required:
+                - grn_date
+                - grn_total
+                - grn_status
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/grn"
+        "400":
+          description: Invalid request
+    delete:
+      tags:
+        - grn
+      summary: Delete GRN by id
+      description: Delete GRN by id
+      operationId: deleteGrnById
+      security:
+        - api_key: []
+      parameters:
+        - name: grn_id
+          in: path
+          description: ID of GRN to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      responses:
+        "200":
+          description: successful operation
+        "400":
           description: Invalid request
 
 components:
   schemas:
-    
     user:
       type: object
       properties:
@@ -252,18 +620,18 @@ components:
         productList:
           type: array
           items:
-            $ref: '#/components/schemas/product_list'
+            $ref: "#/components/schemas/product_list"
         favouriteList:
           type: array
           items:
-            $ref: '#/components/schemas/product_list'
+            $ref: "#/components/schemas/product_list"
         staff_salary:
           type: number
           format: integer
         user_account_status:
           type: string
           items:
-            $ref: '#/components/schemas/user_account_status'
+            $ref: "#/components/schemas/user_account_status"
         reset_pass_token:
           type: string
           format: string
@@ -413,7 +781,7 @@ components:
           format: date-time
         update_at:
           type: string
-          format: date-time 
+          format: date-time
     role_user:
       type: object
       properties:
@@ -429,7 +797,7 @@ components:
         update_at:
           type: string
           format: date-time
-    role_permission: 
+    role_permission:
       type: object
       properties:
         role_id:
@@ -444,17 +812,17 @@ components:
         update_at:
           type: string
           format: date-time
-    
+
     # Nested objects
     product_list:
-        type: object
-        properties:
-          product_id:
-              type: string
-              format: uuid
-          product_quantity:
-              type: number
-              format: integer
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        product_quantity:
+          type: number
+          format: integer
 
     # Enums
     user_account_status:
@@ -465,26 +833,6 @@ components:
         - pending_verify
         - blocked
         - deleted
-  # requestBodies:
-    # Pet:
-    #   content:
-    #     application/json:
-    #       schema:
-    #         $ref: '#/components/schemas/Pet'
-    #     application/xml:
-    #       schema:
-    #         $ref: '#/components/schemas/Pet'
-    #   description: Pet object that needs to be added to the store
-    #   required: true
-    # UserArray:
-    #   content:
-    #     application/json:
-    #       schema:
-    #         type: array
-    #         items:
-    #           $ref: '#/components/schemas/User'
-    #   description: List of user object
-    #   required: true
   securitySchemes:
     # petstore_auth:
     #   type: oauth2
@@ -498,4 +846,3 @@ components:
       type: apiKey
       name: api_key
       in: header
-      
