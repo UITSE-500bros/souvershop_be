@@ -7,6 +7,14 @@ dotenv.config()
 import passport from 'passport';
 const app: Express = express()
 const PORT = process.env.PORT || 8000;
+const swaggerUi = require('swagger-ui-express');
+const fs = require("fs")
+const YAML = require('yaml')
+
+const file  = fs.readFileSync('./swagger.yaml', 'utf8')
+const swaggerDocument = YAML.parse(file)
+
+
 
 dotenv.config()
 app.use(json())
@@ -27,7 +35,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/', (req: Request, res: Response) => {
   
   return res.status(200).json({message: 'Welcome to E-commerce API'});
