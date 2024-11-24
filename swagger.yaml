@@ -1,0 +1,501 @@
+openapi: 3.0.0
+info:
+  description: |
+    This is souvershop server.
+  version: "1.0.0"
+  title: Swagger souvershop
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'https://souvershop-ff3c13f9139a.herokuapp.com/api/'
+tags:
+  - name: auth
+    description: Auth APIs
+  - name : product
+    description: Product APIs
+  - name: user
+    description: User APIs
+  - name: grn
+    description: GRN APIs
+  - name: receipt
+    description: Receipt APIs
+  - name: review
+    description: Review APIs
+  - name: category
+    description: Category APIs
+  
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login to the application
+      description: Login to the application
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_email:
+                  type: string
+                  format: email
+                user_password:
+                  type: string
+                  format: password
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
+              required:
+                - user_email
+                - user_password
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    format: string
+                  user:
+                    $ref: '#/components/schemas/user'
+        '400':
+          description: Invalid email/password supplied
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register to the application
+      description: Register to the application
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  format: string
+                user_email:
+                  type: string
+                  format: email
+                user_password:
+                  type: string
+                  format: password
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
+                user_phoneNumber:
+                  type: string
+                  format: string
+                user_address:
+                  type: string
+                  format: string
+              required:
+                - user_name
+                - user_email
+                - user_password
+                - user_phoneNumber
+                - user_address
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    format: string
+                  user:
+                    $ref: '#/components/schemas/user'
+        '400':
+          description: Invalid email/password supplied
+  /auth/login/federated/google:
+    get:
+      tags:
+          - auth
+      responses:
+        '200':
+          description: successful operation
+  /category:
+    get:
+      tags:
+        - category
+      summary: Get all categories
+      description: Get all categories
+      operationId: getCategories
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/category'
+        '400':
+          description: Invalid request
+    post:
+      tags:
+        - category
+      summary: Create a new category
+      description: Create a new category
+      operationId: createCategory
+      security:
+        - api_key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                  format: string
+              required:
+                - category_name
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category'
+        '400':
+          description: Invalid request
+  /product:
+    post:
+      tags:
+        - product
+      summary: Create a new product
+      description: Create a new product
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_name:
+                  type: string
+                  format: string
+                product_description:
+                  type: string
+                  format: string
+                product_price:
+                  type: number
+                  format: float
+                product_quantity:
+                  type: number
+                  format: integer
+                product_image:
+                  type: string
+                  format: string
+                product_category:
+                  type: number
+                  format: integer
+              required:
+                - product_name
+                - product_description
+                - product_price
+                - product_quantity
+                - product_image
+                - product_category
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid request
+
+components:
+  schemas:
+    
+    user:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        user_avatar:
+          type: string
+          format: string
+        user_name:
+          type: string
+          format: string
+        user_email:
+          type: string
+          format: email
+        user_password:
+          type: string
+          format: password
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
+        user_phoneNumber:
+          type: string
+          format: string
+        user_address:
+          type: string
+          format: string
+        productList:
+          type: array
+          items:
+            $ref: '#/components/schemas/product_list'
+        favouriteList:
+          type: array
+          items:
+            $ref: '#/components/schemas/product_list'
+        staff_salary:
+          type: number
+          format: integer
+        user_account_status:
+          type: string
+          items:
+            $ref: '#/components/schemas/user_account_status'
+        reset_pass_token:
+          type: string
+          format: string
+        access_token:
+          type: string
+          format: string
+        verify_token:
+          type: string
+          format: string
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    role:
+      type: object
+      properties:
+        role_id:
+          type: string
+          format: uuid
+        role_name:
+          type: string
+          format: string
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    permission:
+      type: object
+      properties:
+        permission_id:
+          type: string
+          format: uuid
+        permission_name:
+          type: string
+          format: string
+        permission_description:
+          type: string
+          format: string
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    category:
+      type: object
+      properties:
+        category_id:
+          type: string
+          format: uuid
+        category_name:
+          type: string
+          format: string
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    grn:
+      type: object
+      properties:
+        grn_id:
+          type: string
+          format: uuid
+        grn_date:
+          type: string
+          format: date
+        grn_total:
+          type: number
+          format: float
+        grn_status:
+          type: string
+          format: string
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    product:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        product_name:
+          type: string
+          format: string
+        product_description:
+          type: string
+          format: string
+        product_price:
+          type: number
+          format: float
+        product_quantity:
+          type: number
+          format: integer
+        product_image:
+          type: string
+          format: string
+        product_category:
+          type: number
+          format: integer
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    receipt:
+      type: object
+      properties:
+        receipt_id:
+          type: string
+          format: uuid
+        receipt_date:
+          type: string
+          format: date
+        receipt_total:
+          type: number
+          format: float
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    review:
+      type: object
+      properties:
+        review_id:
+          type: string
+          format: uuid
+        review_content:
+          type: string
+          format: string
+        review_rating:
+          type: number
+          format: integer
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time 
+    role_user:
+      type: object
+      properties:
+        role_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    role_permission: 
+      type: object
+      properties:
+        role_id:
+          type: string
+          format: uuid
+        permission_id:
+          type: string
+          format: uuid
+        create_at:
+          type: string
+          format: date-time
+        update_at:
+          type: string
+          format: date-time
+    
+    # Nested objects
+    product_list:
+        type: object
+        properties:
+          product_id:
+              type: string
+              format: uuid
+          product_quantity:
+              type: number
+              format: integer
+
+    # Enums
+    user_account_status:
+      type: object
+      enum:
+        - active
+        - verified
+        - pending_verify
+        - blocked
+        - deleted
+  # requestBodies:
+    # Pet:
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: '#/components/schemas/Pet'
+    #     application/xml:
+    #       schema:
+    #         $ref: '#/components/schemas/Pet'
+    #   description: Pet object that needs to be added to the store
+    #   required: true
+    # UserArray:
+    #   content:
+    #     application/json:
+    #       schema:
+    #         type: array
+    #         items:
+    #           $ref: '#/components/schemas/User'
+    #   description: List of user object
+    #   required: true
+  securitySchemes:
+    # petstore_auth:
+    #   type: oauth2
+    #   flows:
+    #     implicit:
+    #       authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
+    #       scopes:
+    #         'write:pets': modify pets in your account
+    #         'read:pets': read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+      
