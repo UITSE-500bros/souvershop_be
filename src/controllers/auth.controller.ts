@@ -214,15 +214,52 @@ class AuthController {
   // }
 
   async googleLogin(req: Request, res: Response, next: Function) {
-    
-  
     passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next);
-
-      
   }
-  async googleCallback(req: Request, res: Response) {
-
-  }
+  async googleCallback(req: Request, res: Response, next: Function) {
+    passport.authenticate('google', async (err, profile, info) => {
+      if (err) {
+        console.error('Authentication error:', err);
+        return res.redirect('/login?error=authentication_failed');
+      }
   
+      if (!profile) {
+        console.error('Profile not retrieved from Google.');
+        return res.redirect('/login?error=profile_not_found');
+      }
+  
+      try {
+        // // Extract profile information
+        // const userData = {
+        //   googleId: profile.id,
+        //   displayName: profile.displayName,
+        //   email: profile.emails?.[0]?.value || null,
+        //   avatar: profile.photos?.[0]?.value || null,
+        // };
+  
+        // // Check or create the user in the database
+        // let user = await db.User.findOne({ where: { googleId: userData.googleId } });
+  
+        // if (!user) {
+        //   user = await db.User.create(userData);
+        // }
+  
+        // // Attach user to session
+        // req.logIn(user, (err) => {
+        //   if (err) {
+        //     console.error('Login error:', err);
+        //     return res.redirect('/login?error=login_failed');
+        //   }
+  
+        //   console.log('User authenticated and stored in session:', user);
+        //   res.redirect('/dashboard'); // Redirect to a post-login page
+        // });
+        console.log('Profile:', profile); 
+      } catch (error) {
+        console.error('Database error:', error);
+        return res.redirect('/login?error=database_error');
+      }
+    })(req, res, next);
+  }
 }
 export default new AuthController();

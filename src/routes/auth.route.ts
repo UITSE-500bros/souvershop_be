@@ -1,33 +1,23 @@
-import { Router } from 'express';
-var GoogleStrategy = require('passport-google-oidc');
-import { AuthController } from '../controllers';
-var passport = require('passport');
+import { Router } from 'express'
+import { AuthController } from '../controllers'
+import { Request, Response } from 'express'
 
-const authRouter = Router();
-passport.use(
-    'google',
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID || '',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-        callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8000/api/oauth2/redirect/google',
-      },
-      async (issuer, profile, context, idToken, accessToken, refreshToken, done) => {
-        try {
-          console.log('profile', profile);
-        } catch (err) {
-          done(err);
-        }
+const authRouter = Router()
+
+authRouter.post('/register', AuthController.register)
+authRouter.get('/login/federated/google', AuthController.googleLogin)
+authRouter.get('/oauth2/redirect/google', AuthController.googleCallback)
+authRouter.get('/logout', (req: Request, res: Response) => {
+  req.logout(() => {
+    req.session?.destroy((err) => {
+      if (err) {
+        console.error('Session destroy error:', err)
+        return res.status(500).json({ message: 'Session destroy failed' })
       }
-    )
-  );
-
-authRouter.post('/register', AuthController.register);
-authRouter.get('/login/federated/google', passport.authenticate('google', { scope: ['openid', 'profile', 'email'] }));
-
-authRouter.get('/oauth2/redirect/google', passport.authenticate('google', {
-  successReturnToOrRedirect: 'http://localhost:3000/',
-  failureRedirect: ''
-}));
-
-export default authRouter;
+      res.clearCookie('connect.sid');  
+      // All operations succeeded
+      return res.status(200).json({ message: 'Logout successful' })
+    })
+  })
+})
+export default authRouter
