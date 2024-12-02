@@ -21,7 +21,16 @@ class ProductService {
         product_import_price: number
     ) {
         const result = await pool.query(
-            'INSERT INTO product (category_id, product_name, product_import_price, product_selling_price, product_quantity, create_at, update_at) VALUES ($1, $2, $3, $4, 0, NOW(), NOW()) RETURNING *',
+            `INSERT INTO product (
+                category_id, 
+                product_name, 
+                product_import_price, 
+                product_selling_price, 
+                product_quantity, 
+                create_at, 
+                update_at
+            ) VALUES ($1, $2, $3, $4, 0, NOW(), NOW()) 
+            RETURNING *`,
             [
                 category_id, 
                 product_name, 
@@ -45,7 +54,20 @@ class ProductService {
         percentage_sale: number
     ) {
         const result = await pool.query(
-            'UPDATE product SET category_id = $2, product_name = $3, product_image = $4, product_describe = $5, product_selling_price = $6, product_import_price = $7, product_quantity = $8, is_sale = $9, percentage_sale = $10, update_at = NOW() WHERE product_id = $1 RETURNING *',
+            `UPDATE product 
+            SET 
+                category_id = $2, 
+                product_name = $3, 
+                product_image = $4, 
+                product_describe = $5, 
+                product_selling_price = $6, 
+                product_import_price = $7, 
+                product_quantity = $8, 
+                is_sale = $9, 
+                percentage_sale = $10, 
+                update_at = NOW() 
+            WHERE product_id = $1 
+            RETURNING *`,
             [
                 product_id, 
                 category_id, 
@@ -76,23 +98,41 @@ class ProductService {
 
     async getAllInventories() {
         const result = await pool.query(
-          'SELECT product_id, product_quantity FROM product'
+            `SELECT 
+                product_id, 
+                product_name,
+                product_quantity,
+                (product_image->0) as main_img 
+            FROM product`
         );
         return result.rows;
-      }
+    }
     
-      async getInventoryByProductId(product_id: string) {
+    async getInventoryByProductId(product_id: string) {
         const result = await pool.query(
-          'SELECT product_id, product_quantity FROM product WHERE product_id = $1',
-          [product_id]
+            `SELECT 
+                product_id,
+                product_name,
+                (product_image->0) as main_img,
+                product_import_price,
+                product_selling_price,
+                product_quantity
+            FROM product 
+            WHERE product_id = $1`,
+            [product_id]
         );
         
         if (result.rows.length === 0) {
-          throw new Error('Product not found');
+            throw new Error('Product not found');
         }
         
         return result.rows[0];
-      }
+    }
+
+    async getProductsByCategoryId(category_id: number) {
+        const result = await pool.query('SELECT * FROM product WHERE category_id = $1', [category_id]);
+        return result.rows;
+    }
 }
 
 const productService = new ProductService;
