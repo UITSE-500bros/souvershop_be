@@ -100,6 +100,16 @@ export class ProductController {
       return res.status(404).json({ error: err.message });
     }
   }
+
+  async getProductsByCategoryId(req: Request, res: Response): Promise<Response> {
+    const { category_id } = req.params;
+    try {
+      const products = await ProductService.getProductsByCategoryId(Number(category_id));
+      return res.status(200).json(products);
+    } catch (err) {
+      return res.status(500).json({ error: 'Failed to retrieve products' });
+    }
+}
 }
 
 const productController = new ProductController();

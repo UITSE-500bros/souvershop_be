@@ -4,8 +4,8 @@ export default class Review {
   product_id: string;
   review_text: string;
   rating: number;
-  create_at: Date;
-  update_at: Date;
+  create_date: Date;
+  update_date: Date;
 
   constructor(
       receipt_id: string,
@@ -13,15 +13,15 @@ export default class Review {
       product_id: string,
       review_text: string,
       rating: number,
-      create_at: Date,
-      update_at: Date
+      create_date: Date,
+      update_date: Date
   ) {
       this.receipt_id = receipt_id;
       this.customer_id = customer_id;
       this.product_id = product_id;
       this.review_text = review_text;
       this.rating = rating;
-      this.create_at = create_at;
-      this.update_at = update_at;
+      this.create_date = create_date;
+      this.update_date = update_date;
   }
 }
