@@ -3,7 +3,7 @@ import { pool } from "../utils/pool";
 
 class EmployeeService {
     async getEmployee() {
-        const result = await pool.query('SELECT * FROM user WHERE role = 2');
+        const result = await pool.query('SELECT * FROM user WHERE user_role = 13');
         return result.rows;
     }
     async getEmployeeById(employee_id: string) {

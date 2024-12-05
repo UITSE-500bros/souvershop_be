@@ -1,71 +1,74 @@
 import ProductList from "./product_list.model";
 interface UserParams {
-    user_id?: string | null;
-    user_avatar?: string | null;
-    user_name?: string | null;
-    user_email?: string | null;
-    user_password?: string | null;
-    user_role?: number | null;
-    user_phoneNumber?: string | null;
+    user_id?: string | "";
+    user_avatar?: string | "";
+    user_name?: string | "";
+    user_email?: string | "";
+    user_password?: string | "";
+    user_role?: number | 0;
+    user_phoneNumber?: string | "";
 
     //customer
-    customer_address?: string | null;
-    customer_productList?: ProductList[] | null;
-    customer_favouriteList?: ProductList[] | null;
+    customer_address?: string | "";
+    customer_productList?: ProductList[] | "";
+    customer_favouriteList?: ProductList[] | "";
 
     //staff
-    staff_salary?: number | null;
+    staff_salary?: number | 0;
+
+    //GoogleId
+    googleId?: string | "";
     
-    account_status?: string | null;
-    resetPasToken?: string | null;
-    accessToken?: string | null;
-    verifyToken?: string | null;
+    account_status?: string | "";
+    resetPasToken?: string | "";
+    accessToken?: string | "";
+    verifyToken?: string | "";
     created_at: Date;
     updated_at: Date;
 }
 
 class User {
-    user_id: string | null = null;
-    user_avatar: string | null = null;
-    user_name: string | null = null;
-    user_email: string | null = null;
-    user_password: string | null = null;
-    user_role: number | null = null;
-    user_phoneNumber: string | null = null;
+    user_id: string | "";
+    user_avatar: string | "" = "";
+    user_name: string | "";
+    user_email: string | "";
+    user_password: string | "";
+    user_role: number | 0;
+    user_phoneNumber: string | "";
 
 
-    customer_address: string | null = null;
-    customer_productList: ProductList[] | null = null;
-    customer_favouriteList: ProductList[] | null = null;
+    customer_address: string | "";
+    customer_productList: ProductList[] | "";
+    customer_favouriteList: ProductList[] | "" ;
 
-    staff_salary: number | null = null;
+    staff_salary: number | "";
 
-    account_status: string | null = null;
-    resetPasToken: string | null = null;
-    accessToken: string | null = null;
-    verifyToken: string | null = null;
+    account_status: string | "" ;
+    resetPasToken: string | "";
+    accessToken: string | "" ;
+    verifyToken: string | "";
     created_at: Date;
     updated_at: Date;
 
     constructor(params: UserParams) {
-        this.user_id = params.user_id || null;
-        this.user_avatar = params.user_avatar || null;
-        this.user_name = params.user_name || null;
-        this.user_email = params.user_email || null;
-        this.user_password = params.user_password || null;
-        this.user_role = params.user_role || null;
-        this.user_phoneNumber = params.user_phoneNumber || null;
+        this.user_id = params.user_id || "";
+        this.user_avatar = params.user_avatar || "";
+        this.user_name = params.user_name || "";
+        this.user_email = params.user_email || "";
+        this.user_password = params.user_password || "";
+        this.user_role = params.user_role || 0;
+        this.user_phoneNumber = params.user_phoneNumber || "";
 
-        this.customer_address = params.customer_address || null;
-        this.customer_productList = params.customer_productList || null;
-        this.customer_favouriteList = params.customer_favouriteList || null;
+        this.customer_address = params.customer_address || "";
+        this.customer_productList = params.customer_productList || "";
+        this.customer_favouriteList = params.customer_favouriteList || "";
 
-        this.staff_salary = params.staff_salary || null;
+        this.staff_salary = params.staff_salary || "";
 
-        this.account_status = params.account_status || null;
-        this.resetPasToken = params.resetPasToken || null;
-        this.accessToken = params.accessToken || null;
-        this.verifyToken = params.verifyToken || null;
+        this.account_status = params.account_status || "";
+        this.resetPasToken = params.resetPasToken || "";
+        this.accessToken = params.accessToken || "";
+        this.verifyToken = params.verifyToken || "";
         this.created_at = params.created_at;
         this.updated_at = params.updated_at;
     }
