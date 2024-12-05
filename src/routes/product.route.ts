@@ -6,6 +6,7 @@ const router = Router();
 router.get('/', productController.getAllProducts);
 router.get('/inventory', productController.getAllInventories);
 router.get('/inventory/:product_id', productController.getInventoryByProductId);
+router.get('/category/:category_id', productController.getProductsByCategoryId);
 router.get('/:product_id', productController.getProductById);
 router.post('/', productController.createProduct);
 router.put('/:product_id', productController.updateProduct);

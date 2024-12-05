@@ -4,7 +4,7 @@ import employeeService from "./employee.service";
 import userService from "./user.service";
 import mailService from "./mail.service";
 import grnService from "./grn.service";
-
+import reviewService from "./review.service";
 
 export {
     productService,
@@ -12,6 +12,6 @@ export {
     employeeService,
     userService,
     mailService,
-    grnService
-    
+    grnService,
+    reviewService
 }
