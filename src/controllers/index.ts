@@ -3,11 +3,14 @@ import categoryController from './category.controller';
 import productController from './product.controller';
 import grnController from './grn.controller';
 import reviewController from './review.controller';
-
+import receiptController from './receipt.controller';
+import employeeController from './employee.controller';
 export {
     AuthController,
     categoryController,
     productController,
     grnController,
-    reviewController
+    reviewController,
+    receiptController,
+    employeeController
 }
