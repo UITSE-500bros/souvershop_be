@@ -14,6 +14,7 @@ class UserService {
     //     }
     // }
     async createUser(user: User):Promise<User | null> {
+        console.log(user);
         const { error } = await supabase
             .from('user')
             .insert({
@@ -58,7 +59,7 @@ class UserService {
 
     }
 
-    async updateUserTokens(user: User, tokens: { accessToken?: string; resetPasToken?: string; verifyToken?: string }) {
+    async updateUserTokens(user: User, tokens: { accessToken?: string; refreshToken?: string, resetPasToken?: string; verifyToken?: string; }) {
         try {
             const { error } = await supabase
                 .from('user')
@@ -74,10 +75,10 @@ class UserService {
                 return null; // or handle the error as needed
             }
     
-            return "Tokens updated successfully";
+            return ;
         } catch (err) {
             console.error("Unexpected error:", err);
-            return null; // handle unexpected errors
+            return null;
         }
     }
     

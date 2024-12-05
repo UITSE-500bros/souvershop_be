@@ -1,79 +1,80 @@
-import { config } from 'dotenv';
-import { Request, Response } from 'express';
-import { mailTemplate } from '../constants';
-import { User } from '../models';
-import { mailService, userService } from '../services';
-import { signToken } from '../utils';
-import passport from 'passport';
+import { config } from 'dotenv'
+import { Request, Response } from 'express'
+import { mailTemplate } from '../constants'
+import { User } from '../models'
+import { mailService, userService } from '../services'
+import { signToken } from '../utils'
+import passport from 'passport'
 config()
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 // const SECRET_KEY = process.env.SECRET_KEY;
 
 class AuthController {
   async register(req: Request, res: Response) {
-    const { name, email, password, phoneNumber } = req.body;
+    const { name, email, password, phoneNumber } = req.body
     if (!name || !email || !password || !phoneNumber) {
-      return res.status(400).json({ message: 'Please fill all fields' });
+      return res.status(400).json({ message: 'Please fill all fields' })
     }
-    const userExist = await userService.getUserByEmail(email);
+    const userExist = await userService.getUserByEmail(email)
     if (userExist) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'User already exists' })
     }
-    const salt = await bcrypt.genSaltSync(saltRounds);
-    const hashedPassword = await bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSaltSync(saltRounds)
+    const hashedPassword = await bcrypt.hashSync(password, salt)
 
-    const customer = new User(
-      {
-        user_name: name,
-        user_email: email,
-        user_password: hashedPassword,
-        user_phoneNumber: phoneNumber,
-        user_role: 14,
-        created_at: new Date(),
-        updated_at: new Date()
-      }
-    );
+    const customer = new User({
+      user_name: name,
+      user_email: email,
+      user_password: hashedPassword,
+      user_phoneNumber: phoneNumber,
+      user_role: 14,
+      created_at: new Date(),
+      updated_at: new Date()
+    })
     try {
-      const response = await userService.createUser(customer);
+      const response = await userService.createUser(customer)
       if (!response) {
-        return res.status(400).json({ message: 'Error creating user' });
+        return res.status(400).json({ message: 'Error creating user' })
       }
       const verifiedEmailToken = await signToken({
         type: 'verifiedEmail',
-        payload: { _id: response.user_id as string, user_role: 'customer' }
-      });
-      await mailService.sendVerifiedEmail(email, 'Verify your email', mailTemplate(verifiedEmailToken));
-      return res.status(201).json({ message: 'User created' });
+        payload: { _id: response.user_id as string, user_role: 14 }
+      })
+      await mailService.sendVerifiedEmail(email, 'Verify your email', mailTemplate(verifiedEmailToken))
+      return res.status(201).json({ message: 'User created' })
     } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: 'Error creating user' });
+      console.log(error)
+      return res.status(400).json({ message: 'Error creating user' })
     }
   }
 
-  // async login(req: Request, res: Response) {
-  //   const { email } = req.body;
-  //   const user = await userService.getUserByEmail(email);
-  //   if (user === undefined) {
-  //     return res.status(400).json({ message: 'No user exists in database' });
-  //   }
+  async login(req: Request, res: Response) {
+    const { email, password } = req.body
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please fill all fields' })
+    }
+    const user = await userService.getUserByEmail(email)
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' })
+    }
+    const isMatch = await bcrypt.compare(password, user.user_password)
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' })
+    }
+    if (user.account_status !== 'verify') {
+      return res.status(400).json({ message: 'Please verify your email' })
+    }
+    const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
+    const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
+    
+    // Now that accessToken and refreshToken are strings, pass them to the service
+    await userService.updateUserTokens(user, { accessToken, refreshToken, });
+    
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'none', secure: true })
+    return res.status(200).json({ accessToken, refreshToken }) 
 
-  //   // const _id = user._id;
-  //   // const isAdmin = user.role === 'admin';
-  //   // const accessToken = signToken({ type: 'accessToken', payload: { _id, isAdmin } })
-  //   // const refreshToken = signToken({ type: 'refreshToken', payload: { _id, isAdmin } })
-  //   // const token = await Promise.all([accessToken, refreshToken])
-
-  //   // const validPassword = await bcrypt.compare(password, user.user_password, function (err: any, result: any) {
-  //   //   if (err) {
-  //   //     console.log(err);
-  //   //     return res.status(401).json({ message: 'Invalid password' });
-  //   //   }
-  //   //   user.user_password = undefined;
-  //   //   res.cookie('refreshToken', token[1], { httpOnly: true, sameSite: 'strict', secure: true });
-  //   //   return res.status(200).json(user);
-  //   // });
-  // }
+  }
 
   // async requestRefreshToken(req: Request, res: Response) {
   //   const { user } = req.body
@@ -112,7 +113,7 @@ class AuthController {
   //     if (!SECRET_KEY) {
   //       return res.status(500).json({ message: 'Internal server error' });
   //     }
-      
+
   //     const decoded: any = jwt.verify(token, SECRET_KEY);
 
   //     // Extract user ID or email from the token payload
@@ -149,7 +150,6 @@ class AuthController {
   //     }
   //     const upload = multer({ storage: multer.memoryStorage() });
 
-
   //     // Access the file buffer
   //     const fileBuffer = req.file.buffer;
 
@@ -164,9 +164,6 @@ class AuthController {
   //     // Create an account for each employee
   //     data.forEach(async (employee: any) => {
   //       const { name, email, phone } = employee;
-        
-
-
 
   //     });
 
@@ -214,52 +211,61 @@ class AuthController {
   // }
 
   async googleLogin(req: Request, res: Response, next: Function) {
-    passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next);
+    passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next)
   }
   async googleCallback(req: Request, res: Response, next: Function) {
     passport.authenticate('google', async (err, profile, info) => {
       if (err) {
-        console.error('Authentication error:', err);
-        return res.redirect('/login?error=authentication_failed');
+        console.error('Authentication error:', err)
+        return res.redirect('/login?error=authentication_failed')
       }
-  
+
       if (!profile) {
-        console.error('Profile not retrieved from Google.');
-        return res.redirect('/login?error=profile_not_found');
+        console.error('Profile not retrieved from Google.')
+        return res.redirect('/login?error=profile_not_found')
       }
-  
       try {
-        // // Extract profile information
-        // const userData = {
-        //   googleId: profile.id,
-        //   displayName: profile.displayName,
-        //   email: profile.emails?.[0]?.value || null,
-        //   avatar: profile.photos?.[0]?.value || null,
-        // };
-  
-        // // Check or create the user in the database
-        // let user = await db.User.findOne({ where: { googleId: userData.googleId } });
-  
-        // if (!user) {
-        //   user = await db.User.create(userData);
-        // }
-  
-        // // Attach user to session
-        // req.logIn(user, (err) => {
-        //   if (err) {
-        //     console.error('Login error:', err);
-        //     return res.redirect('/login?error=login_failed');
-        //   }
-  
-        //   console.log('User authenticated and stored in session:', user);
-        //   res.redirect('/dashboard'); // Redirect to a post-login page
-        // });
-        console.log('Profile:', profile); 
+        const userData = {
+          googleId: profile.id,
+          displayName: profile.displayName,
+          email: profile.emails?.[0]?.value || null,
+          avatar: profile.photos?.[0]?.value || null
+        }
+
+        // Check or create the user in the database
+        let user = await userService.getUserByEmail(userData.email)
+
+        if (!user) {
+          user = await userService.createUser(
+            new User({
+              user_avatar: userData.avatar,
+              user_name: userData.displayName,
+              user_email: userData.email,
+              user_password: '',
+              user_phoneNumber: '',
+              user_role: 14,
+              created_at: new Date(),
+              updated_at: new Date(),
+              googleId: userData.googleId
+            })
+          )
+        }
+
+        // Attach user to session
+        req.logIn(user, (err) => {
+          if (err) {
+            console.error('Login error:', err)
+            return res.redirect('/login?error=login_failed')
+          }
+
+          console.log('User authenticated and stored in session:', user)
+          res.json({ success: true, user })
+        })
       } catch (error) {
-        console.error('Database error:', error);
-        return res.redirect('/login?error=database_error');
+        console.error('Database error:', error)
+        return res.redirect('/login?error=database_error')
       }
-    })(req, res, next);
+    })(req, res, next)
   }
 }
-export default new AuthController();
+export default new AuthController()

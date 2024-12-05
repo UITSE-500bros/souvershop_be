@@ -123,6 +123,18 @@ paths:
       responses:
         "200":
           description: successful operation
+  /auth/logout:
+    get:
+      tags:
+        - auth
+      summary: Logout from the application with Google
+      description: Logout from the application with Google
+      operationId: logout
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: successful operation
   /category:
     get:
       tags:
@@ -496,7 +508,6 @@ paths:
                   $ref: "#/components/schemas/grn"
         "400":
           description: Invalid request
-
   /grn/{grn_id}:
     get:
       tags:
@@ -589,6 +600,215 @@ paths:
           description: successful operation
         "400":
           description: Invalid request
+  /review:
+    post:
+      tags:
+        - review
+      summary: Create a new review
+      description: Create a new review
+      operationId: createReview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                review_content:
+                  type: string
+                  format: string
+                review_rating:
+                  type: number
+                  format: integer
+              required:
+                - review_content
+                - review_rating
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/review"
+        "400":
+          description: Invalid request
+    get:
+      tags:
+        - review
+      summary: Get all reviews
+      description: Get all reviews
+      operationId: getReviews
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/review"
+        "400":
+          description: Invalid request
+  /review/top:
+    get:
+      tags:
+        - review
+      summary: Get top reviews ( Using for Homepage)
+      description: Get top reviews
+      operationId: getTopReviews
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/review"
+        "400":
+          description: Invalid request
+  /review/{customer_id}:
+    get:
+      tags:
+        - review
+      summary: Get reviews by customer id
+      description: Get reviews by customer id
+      operationId: getReviewsByCustomerId
+      security:
+        - api_key: []
+      parameters:
+        - name: customer_id
+          in: path
+          description: ID of customer to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/review"
+        "400":
+          description: Invalid request
+  /review/product/{product_id}:
+    get:
+      tags:
+        - review
+      summary: Get receipts by product id
+      description: Get receipts by product id
+      operationId: getReceiptsByProductId
+      security:
+        - api_key: []
+      parameters:
+        - name: product_id
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/receipt"
+        "400":
+          description: Invalid request
+  /review/customer/{customer_id}/receipt/{receipt_id}/product/{product_id}:
+    put:
+      summary: Update a product review
+      description: Update a review for a product in a specific receipt by a customer.
+      tags:
+        - review
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          description: ID of the customer.
+          schema:
+            type: string
+        - name: receipt_id
+          in: path
+          required: true
+          description: ID of the receipt.
+          schema:
+            type: string
+        - name: product_id
+          in: path
+          required: true
+          description: ID of the product.
+          schema:
+            type: string
+      requestBody:
+        description: Review data to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  format: float
+                  description: Rating given to the product.
+                comment:
+                  type: string
+                  description: Comment for the review.
+              required:
+                - rating
+      responses:
+        200:
+          description: Review updated successfully.
+        400:
+          description: Invalid request body or parameters.
+        404:
+          description: Customer, receipt, or product not found.
+        500:
+          description: Internal server error.
+    delete:
+      summary: Delete a product review
+      description: Delete a review for a product in a specific receipt by a customer.
+      tags:
+        - review
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          description: ID of the customer.
+          schema:
+            type: string
+        - name: receipt_id
+          in: path
+          required: true
+          description: ID of the receipt.
+          schema:
+            type: string
+        - name: product_id
+          in: path
+          required: true
+          description: ID of the product.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Review deleted successfully.
+        404:
+          description: Customer, receipt, or product not found.
+        500:
+          description: Internal server error.
 
 components:
   schemas:
