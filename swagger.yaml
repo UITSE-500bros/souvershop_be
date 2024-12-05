@@ -14,8 +14,8 @@ tags:
     description: Auth APIs
   - name: product
     description: Product APIs
-  - name: user
-    description: User APIs
+  - name: Customer
+    description: Customer APIs
   - name: grn
     description: GRN APIs
   - name: receipt
@@ -24,6 +24,8 @@ tags:
     description: Review APIs
   - name: category
     description: Category APIs
+  - name: owner
+    description: Owner APIs
 
 paths:
   /auth/login:
@@ -809,6 +811,159 @@ paths:
           description: Customer, receipt, or product not found.
         500:
           description: Internal server error.
+  /admin/employees:
+    get:
+      tags:
+        - owner
+      summary: Get all employees
+      description: Get all employees
+      operationId: getEmployees
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+        "400":
+          description: Invalid request
+  /admin/employees/{employee_id}:
+    put:
+      tags:
+        - owner
+      summary: Update employee by id
+      description: Update employee by id
+      operationId: updateEmployeeById
+      security:
+        - api_key: []
+      parameters:
+        - name: employee_id
+          in: path
+          description: ID of employee to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  format: string
+                user_email:
+                  type: string
+                  format: email
+                user_phoneNumber:
+                  type: string
+                  format: string
+                user_address:
+                  type: string
+                  format: string
+                staff_salary:
+                  type: number
+                  format: integer
+                user_account_status:
+                  type: string
+                  format: string
+              required:
+                - user_name
+                - user_email
+                - user_phoneNumber
+                - user_address
+                - staff_salary
+                - user_account_status
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        "400":
+          description: Invalid request
+    post:
+      tags:
+        - owner
+      summary: Create a new employee
+      description: Create a new employee
+      operationId: createEmployee
+      security:
+        - api_key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  format: string
+                user_email:
+                  type: string
+                  format: email
+                user_password:
+                  type: string
+                  format: password
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
+                user_phoneNumber:
+                  type: string
+                  format: string
+                user_address:
+                  type: string
+                  format: string
+                staff_salary:
+                  type: number
+                  format: integer
+                user_account_status:
+                  type: string
+                  format: string
+              required:
+                - user_name
+                - user_email
+                - user_password
+                - user_phoneNumber
+                - user_address
+                - staff_salary
+                - user_account_status
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        "400":
+          description: Invalid request
+    delete:
+      tags:
+        - owner
+      summary: Delete employee by id
+      description: Delete employee by id
+      operationId: deleteEmployeeById
+      security:
+        - api_key: []
+      parameters:
+        - name: employee_id
+          in: path
+          description: ID of employee to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid request
 
 components:
   schemas:
