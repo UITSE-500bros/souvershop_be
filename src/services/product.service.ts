@@ -3,14 +3,14 @@ import reviewService from "./review.service";
 import Product from "../models/product.model";
 import userService from "./user.service";
 
-async function isProductFavourited(customer_id: string, product_id: string): Promise<boolean> {
-    const user = await userService.getUserByID(customer_id);
+async function isProductFavourited(user_id: string, product_id: string): Promise<boolean> {
+    const user = await userService.getUserByID(user_id);
     return user && user.favourite_list ? user.favourite_list.includes(product_id) : false;
 }
 
 class ProductService {
     
-    async getProduct(product_id: string, customer_id: string) {
+    async getProduct(product_id: string, user_id: string) {
         const productResult = await pool.query('SELECT * FROM product WHERE product_id = $1', [product_id]);
         if (productResult.rows.length === 0) {
             throw new Error('Product not found');
@@ -18,7 +18,7 @@ class ProductService {
         const product: Product = productResult.rows[0];
 
         const averageRating = await reviewService.getAverageRatingByProductId(product_id);
-        const isFavourited = await isProductFavourited(customer_id, product_id);
+        const isFavourited = await isProductFavourited(user_id, product_id);
 
         const result = {
             ...product,
@@ -29,13 +29,13 @@ class ProductService {
         return result;
     }
 
-    async getAllProducts(customer_id: string) {
+    async getAllProducts(user_id: string) {
         const productsResult = await pool.query('SELECT * FROM product');
         const products: Product[] = productsResult.rows;
 
         const result = await Promise.all(products.map(async (product) => {
             const averageRating = await reviewService.getAverageRatingByProductId(product.product_id);
-            const isFavourited = await isProductFavourited(customer_id, product.product_id);
+            const isFavourited = await isProductFavourited(user_id, product.product_id);
 
             return {
                 ...product,
@@ -161,14 +161,14 @@ class ProductService {
         return result.rows[0];
     }
 
-    async getProductsByCategoryId(category_id: number, customer_id: string) {
+    async getProductsByCategoryId(category_id: number, user_id: string) {
         const productsResult = await pool.query('SELECT * FROM product WHERE category_id = $1', [category_id]);
         const products: Product[] = productsResult.rows;
 
         const result = await Promise.all(products.map(async (product) => {
             const averageRating = await reviewService.getAverageRatingByProductId(product.product_id);
-            const isFavourited = await isProductFavourited(customer_id, product.product_id);
-            
+            const isFavourited = await isProductFavourited(user_id, product.product_id);
+
             return {
                 ...product,
                 average_rating: averageRating,
