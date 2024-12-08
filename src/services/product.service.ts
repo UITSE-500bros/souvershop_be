@@ -1,18 +1,39 @@
 import { pool } from "../utils";
+import reviewService from "./review.service";
+import Product from "../models/product.model";
 
 class ProductService {
     
-    async getProduct(product_id: string){
-        const result = await pool.query('SELECT * FROM product WHERE product_id = $1', [product_id]);
-        if (result.rows.length === 0) {
+    async getProduct(product_id: string) {
+        const productResult = await pool.query('SELECT * FROM product WHERE product_id = $1', [product_id]);
+        if (productResult.rows.length === 0) {
             throw new Error('Product not found');
         }
-        return result.rows[0];
+        const product: Product = productResult.rows[0];
+
+        const averageRating = await reviewService.getAverageRatingByProductId(product_id);
+
+        const productWithAverageRating = {
+            ...product,
+            average_rating: averageRating
+        };
+
+        return productWithAverageRating;
     }
 
-    async getAllProducts(){
-        const result = await pool.query('SELECT * FROM product');
-        return result.rows;        
+    async getAllProducts() {
+        const productsResult = await pool.query('SELECT * FROM product');
+        const products: Product[] = productsResult.rows;
+
+        const productsWithAverageRating = await Promise.all(products.map(async (product) => {
+            const averageRating = await reviewService.getAverageRatingByProductId(product.product_id);
+            return { 
+                ...product,
+                average_rating: averageRating
+            };
+        }));
+
+        return productsWithAverageRating;
     }
 
     async createProduct(
@@ -130,9 +151,17 @@ class ProductService {
     }
 
     async getProductsByCategoryId(category_id: number) {
-        const result = await pool.query('SELECT * FROM product WHERE category_id = $1', [category_id]);
-        return result.rows;
+        const productsResult = await pool.query('SELECT * FROM product WHERE category_id = $1', [category_id]);
+        const products: Product[] = productsResult.rows;
+
+        const productsWithAverageRating = await Promise.all(products.map(async (product) => {
+            const averageRating = await reviewService.getAverageRatingByProductId(product.product_id);
+            return {...product, average_rating: averageRating };
+        }));
+
+        return productsWithAverageRating;
     }
+
 }
 
 const productService = new ProductService;

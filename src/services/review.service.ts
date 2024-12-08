@@ -156,6 +156,18 @@ class ReviewService {
     }
     return result.rows[0];
   }
+
+  async getAverageRatingByProductId(product_id: string) {
+    const result = await pool.query(
+      `SELECT AVG(rating) as average_rating 
+       FROM review 
+       WHERE product_id = $1`,
+      [product_id]
+    );
+
+    const averageRating = result.rows[0].average_rating;
+    return averageRating ? parseFloat(averageRating).toFixed(1) : null;
+  }
 }
 
 const reviewService = new ReviewService();
