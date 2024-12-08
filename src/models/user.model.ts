@@ -11,7 +11,7 @@ interface UserParams {
     //customer
     customer_address?: string | "";
     customer_productList?: ProductList[] | "";
-    customer_favouriteList?: ProductList[] | "";
+    customer_favouriteList?: string[] | "";
 
     //staff
     staff_salary?: number | 0;
@@ -39,7 +39,7 @@ class User {
 
     customer_address: string | "";
     customer_productList: ProductList[] | "";
-    customer_favouriteList: ProductList[] | "" ;
+    customer_favouriteList: string[] | "" ;
 
     staff_salary: number | "";
 
