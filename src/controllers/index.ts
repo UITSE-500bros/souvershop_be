@@ -5,6 +5,7 @@ import grnController from './grn.controller';
 import reviewController from './review.controller';
 import receiptController from './receipt.controller';
 import employeeController from './employee.controller';
+import bannerController from './banner.controller';
 export {
     AuthController,
     categoryController,
@@ -12,5 +13,6 @@ export {
     grnController,
     reviewController,
     receiptController,
-    employeeController
+    employeeController,
+    bannerController
 }
