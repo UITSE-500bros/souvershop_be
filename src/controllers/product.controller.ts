@@ -4,8 +4,9 @@ import ProductService from '../services/product.service';
 export class ProductController {
 
   async getAllProducts(req: Request, res: Response): Promise<Response> {
+    const { user_id } = req.params;
     try {
-      const products = await ProductService.getAllProducts();
+      const products = await ProductService.getAllProducts(user_id);
       return res.status(200).json(products);
     } catch (err) {
       return res.status(500).json({ error: 'Failed to retrieve products' });
@@ -13,9 +14,9 @@ export class ProductController {
   }
 
   async getProductById(req: Request, res: Response): Promise<Response> {
-    const { product_id } = req.params;
+    const { product_id, user_id } = req.params;
     try {
-      const product = await ProductService.getProduct(product_id);
+      const product = await ProductService.getProduct(product_id, user_id);
       return res.status(200).json(product);
     } catch (err: any) {
       return res.status(404).json({ error: err.message });
@@ -102,14 +103,14 @@ export class ProductController {
   }
 
   async getProductsByCategoryId(req: Request, res: Response): Promise<Response> {
-    const { category_id } = req.params;
+    const { category_id, user_id } = req.params; 
     try {
-      const products = await ProductService.getProductsByCategoryId(Number(category_id));
+      const products = await ProductService.getProductsByCategoryId(Number(category_id), user_id);
       return res.status(200).json(products);
     } catch (err) {
       return res.status(500).json({ error: 'Failed to retrieve products' });
     }
-}
+  }
 }
 
 const productController = new ProductController();

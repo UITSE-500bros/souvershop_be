@@ -5,6 +5,8 @@ import userService from "./user.service";
 import mailService from "./mail.service";
 import grnService from "./grn.service";
 import reviewService from "./review.service";
+import bannerService from "./banner.service";
+import profileService from "./profile.service";
 
 export {
     productService,
@@ -13,5 +15,7 @@ export {
     userService,
     mailService,
     grnService,
-    reviewService
+    reviewService,
+    bannerService,
+    profileService
 }
