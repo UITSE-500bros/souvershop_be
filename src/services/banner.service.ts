@@ -4,7 +4,19 @@ class BannerService {
   private bucketName = 'banners';
 
   async getBanners() {
-    const bannerNames = ['banner_main', 'banner_1', 'banner_2', 'banner_3', 'banner_4', 'banner_5', 'banner_6', 'banner_7', 'banner_8', 'banner_9', 'banner_10'];
+    const bannerNames = [
+      'banner_main', 
+      'banner_1', 
+      'banner_2', 
+      'banner_3', 
+      'banner_4', 
+      'banner_5', 
+      'banner_6', 
+      'banner_7', 
+      'banner_8', 
+      'banner_9', 
+      'banner_10'
+    ];
     const banners: { [key: string]: string | null } = {};
 
     const { data: allFiles, error: listError } = await supabase.storage.from(this.bucketName).list();

@@ -6,6 +6,7 @@ import mailService from "./mail.service";
 import grnService from "./grn.service";
 import reviewService from "./review.service";
 import bannerService from "./banner.service";
+import profileService from "./profile.service";
 
 export {
     productService,
@@ -15,5 +16,6 @@ export {
     mailService,
     grnService,
     reviewService,
-    bannerService
+    bannerService,
+    profileService
 }

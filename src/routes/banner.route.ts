@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { bannerController } from '../controllers';
-import multer from 'multer';
+import { upload } from '../middleware/upload';
 
-const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
 
 router.get('/', bannerController.getBanners);
