@@ -1,19 +1,19 @@
 import { Router } from 'express';
-import {productController} from '../controllers';
+import { productController } from '../controllers';
 
 const router = Router();
 
-router.get('/', productController.getAllProducts);
 router.get('/inventory', productController.getAllInventories);
 router.get('/inventory/:product_id', productController.getInventoryByProductId);
-router.get('/category/:category_id', productController.getProductsByCategoryId);
-router.get('/:product_id', productController.getProductById);
+
+router.get('/category/:category_id/:user_id', productController.getProductsByCategoryId);
+
+router.get('/:product_id/:user_id', productController.getProductById);
+
+router.get('/:user_id', productController.getAllProducts);
+
 router.post('/', productController.createProduct);
 router.put('/:product_id', productController.updateProduct);
 router.delete('/:product_id', productController.deleteProduct);
-
-// Thiếu get product by category_id
-// Update getAllInventories cần name, main_img
-// Change /inventories/:product_id return id, name, main_img, price, quantity
 
 export default router;
