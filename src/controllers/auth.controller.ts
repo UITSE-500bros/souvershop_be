@@ -14,19 +14,18 @@ const saltRounds = 10
 class AuthController {
   // For normal registration at Customer side 
   async register(req: Request, res: Response) {
-    const { email, password } = req.body
-    if (!email || !password) {
+    const { user_email, user_password } = req.body
+    if (!user_email || !user_password) {
       return res.status(400).json({ message: 'Please fill all fields' })
     }
-    const userExist = await userService.getUserByEmail(email)
+    const userExist = await userService.getUserByEmail(user_email)
     if (userExist) {
       return res.status(400).json({ message: 'User already exists' })
     }
     const salt = await bcrypt.genSaltSync(saltRounds)
-    const hashedPassword = await bcrypt.hashSync(password, salt)
-
+    const hashedPassword = await bcrypt.hashSync(user_password, salt)
     const customer = new User({
-      user_email: email,
+      user_email: user_email,
       user_password: hashedPassword,
       user_role: 14,
       created_at: new Date(),
@@ -41,7 +40,7 @@ class AuthController {
         type: 'verifiedEmail',
         payload: { _id: response.user_id as string, user_role: 14 }
       })
-      await mailService.sendVerifiedEmail(email, 'Verify your email', mailTemplate(verifiedEmailToken))
+      await mailService.sendVerifiedEmail(user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
       return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
     } catch (error) {
       console.log(error)
@@ -84,11 +83,8 @@ class AuthController {
 
     const payload = await verify(token, process.env.EMAIL_SECRET_HASH as string);
 
-    // Check if the payload is a JwtPayload
     if (typeof payload !== 'string' && payload && 'user_role' in payload && '_id' in payload) {
       const userId = payload._id;
-      //const userRole = payload.user_role;
-      // Access the values
       const user = await userService.getUserByID(userId)
       if (!user) {
         return res.status(400).json({ message: 'User does not exist' })
