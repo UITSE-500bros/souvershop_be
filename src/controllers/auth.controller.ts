@@ -5,7 +5,7 @@ import { User } from '../models'
 import { mailService, userService } from '../services'
 import { signToken } from '../utils'
 import passport from 'passport'
-import { verify, JwtPayload } from 'jsonwebtoken'
+import { verify } from 'jsonwebtoken'
 config()
 const bcrypt = require('bcrypt')
 const saltRounds = 10
@@ -98,11 +98,29 @@ class AuthController {
       }
       await userService.updateUserTokens(user, { verifyToken: token });
       return res.status(200).json({ message: 'Email verified successfully' })
-    } 
+    }
     return res.status(400).json({ message: 'Invalid token' })
 
   }
 
+  async forgotPassword(req: Request, res: Response) {
+    const { email } = req.body
+    if (!email) {
+      return res.status(400).json({ message: 'Please fill all fields' })
+    }
+    const user = await userService.getUserByEmail(email)
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' })
+    }
+    const resetPasToken = await signToken({ type: 'resetPassword', payload: { _id: user.user_id, user_role: user.user_role } });
+    await userService.updateUserTokens(user, { resetPasToken });
+    await mailService.sendResetPasswordEmail(email, 'Reset your password', mailTemplate(resetPasToken))
+    return res.status(200).json({ message: 'Please check your email to reset password' })
+  }
+
+  async refreshTokenEmail(email: string, token: string, template: string) {
+
+  }
   // For Googole registration
   async googleLogin(req: Request, res: Response, next: Function) {
     passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next)
@@ -143,18 +161,26 @@ class AuthController {
               googleId: userData.googleId
             })
           )
+          // Attach user to session
+          req.logIn(user, async (err) => {
+            if (err) {
+              console.error('Login error:', err)
+              return res.redirect('/login?error=login_failed')
+            }
+
+            const verifiedEmailToken = await signToken({
+              type: 'verifiedEmail',
+              payload: { _id: user.user_id as string, user_role: 14 }
+            })
+            await mailService.sendVerifiedEmail(user.user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
+            return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
+          })
+        }else {
+          const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
+          return res.status(200).json({
+            'accessToken': accessToken
+          })
         }
-
-        // Attach user to session
-        req.logIn(user, (err) => {
-          if (err) {
-            console.error('Login error:', err)
-            return res.redirect('/login?error=login_failed')
-          }
-
-          console.log('User authenticated and stored in session:', user)
-          res.json({ success: true, user })
-        })
       } catch (error) {
         console.error('Database error:', error)
         return res.redirect('/login?error=database_error')
