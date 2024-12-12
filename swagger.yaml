@@ -9,6 +9,7 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
   - url: "https://souvershop-ff3c13f9139a.herokuapp.com/api/"
+  - url: "http://localhost:8000/api/"
 tags:
   - name: auth
     description: Auth APIs
@@ -80,9 +81,6 @@ paths:
             schema:
               type: object
               properties:
-                user_name:
-                  type: string
-                  format: string
                 user_email:
                   type: string
                   format: email
@@ -90,18 +88,9 @@ paths:
                   type: string
                   format: password
                   pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
-                user_phoneNumber:
-                  type: string
-                  format: string
-                user_address:
-                  type: string
-                  format: string
               required:
-                - user_name
                 - user_email
                 - user_password
-                - user_phoneNumber
-                - user_address
         required: true
       responses:
         "200":
@@ -964,7 +953,39 @@ paths:
           description: successful operation
         "400":
           description: Invalid request
-
+  /receipt/create_payment_url:
+    post:
+      tags:
+        - Customer
+      summary: Create a transaction
+      description: Create a transaction
+      operationId: createTransaction
+      security:
+        - api_key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: number
+              required:
+                - amount
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Invalid request
 components:
   schemas:
     user:
