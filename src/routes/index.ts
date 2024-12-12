@@ -1,11 +1,13 @@
 import {Router} from 'express';
 import authRouter from './auth.route';
-import categoryRouter from './category.route';
+import categoryRouter from './category.route'
 import grnRouter from './grn.route';
 import productRouter from './product.route'
 import reviewRouter from './review.route'
 import receiptRouter from './receipt.route'
 import adminRouter from './admin.route'
+import bannerRouter from './banner.route'
+import profileRouter from './profile.route'
 
 const router = Router();
 
@@ -16,5 +18,7 @@ router.use('/product',productRouter);
 router.use('/review',reviewRouter);
 router.use('/receipt',receiptRouter);
 router.use('/admin',adminRouter);
+router.use('/banner', bannerRouter);
+router.use('/profile', profileRouter);
 
 export default router;
