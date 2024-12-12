@@ -49,19 +49,19 @@ class AuthController {
   }
 
   async login(req: Request, res: Response) {
-    const { email, password } = req.body
-    if (!email || !password) {
+    const { user_email, user_password } = req.body
+    if (!user_email || !user_password) {
       return res.status(400).json({ message: 'Please fill all fields' })
     }
-    const user = await userService.getUserByEmail(email)
+    const user = await userService.getUserByEmail(user_email)
     if (!user) {
       return res.status(400).json({ message: 'User does not exist' })
     }
-    const isMatch = await bcrypt.compare(password, user.user_password)
+    const isMatch = await bcrypt.compare(user_password, user.user_password)
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' })
     }
-    if (user.account_status !== 'verify') {
+    if (user.account_status !== 'active') {
       return res.status(400).json({ message: 'Please verify your email' })
     }
     const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
@@ -89,10 +89,10 @@ class AuthController {
       if (!user) {
         return res.status(400).json({ message: 'User does not exist' })
       }
-      if (user.account_status === 'verify') {
+      if (user.account_status === 'active') {
         return res.status(400).json({ message: 'Email already verified' })
       }
-      await userService.updateUserTokens(user, { verifyToken: token });
+      await userService.updateStatus(user);
       return res.status(200).json({ message: 'Email verified successfully' })
     }
     return res.status(400).json({ message: 'Invalid token' })

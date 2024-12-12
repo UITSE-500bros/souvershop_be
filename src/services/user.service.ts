@@ -78,6 +78,26 @@ class UserService {
             return null;
         }
     }
+    async updateStatus(user: User) {
+        try {
+            const { error } = await supabase
+                .from('user')
+                .update({
+                    user_account_status: 'active'
+                })
+                .eq('user_id', user.user_id);
+    
+            if (error) {
+                console.error("Error updating status:", error);
+                return null; // or handle the error as needed
+            }
+    
+            return ;
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            return null;
+        }
+    }
     
 }
 const userService = new UserService();
