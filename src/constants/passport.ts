@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: 'https://souvershop-ff3c13f9139a.herokuapp.com/api/auth/oauth2/redirect/google',
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || '',
       prompt: 'select_account',
       scope: ["profile", "email"],
     },

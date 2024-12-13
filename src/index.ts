@@ -16,6 +16,7 @@ const swaggerDocument = YAML.parse(file)
 dotenv.config()
 app.use(json())
 app.use(cors())
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'your-secret-key', // Use a strong secret in production

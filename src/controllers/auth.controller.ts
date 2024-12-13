@@ -4,7 +4,7 @@ import { mailTemplate } from '../constants'
 import { User } from '../models'
 import { mailService, userService } from '../services'
 import { signToken } from '../utils'
-import passport from 'passport'
+import { passport } from '../constants'
 import { verify } from 'jsonwebtoken'
 config()
 const bcrypt = require('bcrypt')
