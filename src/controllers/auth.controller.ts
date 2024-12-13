@@ -41,6 +41,8 @@ class AuthController {
         payload: { _id: response.user_id as string, user_role: 14 }
       })
       await mailService.sendVerifiedEmail(user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
+      await userService.updateUserTokens(response, { verifyToken: verifiedEmailToken });
+
       return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
     } catch (error) {
       console.log(error)
@@ -76,12 +78,12 @@ class AuthController {
   }
 
   async verifyEmail(req: Request, res: Response) {
-    const { token } = req.params
-    if (!token) {
+    const { verifytoken } = req.params
+    if (!verifytoken) {
       return res.status(400).json({ message: 'Invalid token' })
     }
 
-    const payload = await verify(token, process.env.EMAIL_SECRET_HASH as string);
+    const payload = await verify(verifytoken, process.env.EMAIL_SECRET_HASH as string);
 
     if (typeof payload !== 'string' && payload && 'user_role' in payload && '_id' in payload) {
       const userId = payload._id;
@@ -100,17 +102,17 @@ class AuthController {
   }
 
   async forgotPassword(req: Request, res: Response) {
-    const { email } = req.body
-    if (!email) {
+    const { user_email } = req.body
+    if (!user_email) {
       return res.status(400).json({ message: 'Please fill all fields' })
     }
-    const user = await userService.getUserByEmail(email)
+    const user = await userService.getUserByEmail(user_email)
     if (!user) {
       return res.status(400).json({ message: 'User does not exist' })
     }
     const resetPasToken = await signToken({ type: 'resetPassword', payload: { _id: user.user_id, user_role: user.user_role } });
     await userService.updateUserTokens(user, { resetPasToken });
-    await mailService.sendResetPasswordEmail(email, 'Reset your password', mailTemplate(resetPasToken))
+    await mailService.sendResetPasswordEmail(user_email, 'Reset your password', mailTemplate(resetPasToken))
     return res.status(200).json({ message: 'Please check your email to reset password' })
   }
 
@@ -119,7 +121,7 @@ class AuthController {
   }
   // For Googole registration
   async googleLogin(req: Request, res: Response, next: Function) {
-    passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next)
+    passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next);
   }
   async googleCallback(req: Request, res: Response, next: Function) {
     passport.authenticate('google', async (err, profile, info) => {

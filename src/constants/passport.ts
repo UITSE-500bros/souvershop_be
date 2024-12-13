@@ -6,10 +6,12 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8000/api/oauth2/redirect/google',
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || '',
       prompt: 'select_account',
+      scope: ["profile", "email"],
     },
     async (issuer, profile, context, idToken, accessToken, refreshToken, done) => {
+      console.log('profile', profile) 
       try {
         return done(null, profile)
       } catch (err) {
