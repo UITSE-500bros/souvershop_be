@@ -1,5 +1,8 @@
 var GoogleStrategy = require('passport-google-oidc')
 var passport = require('passport')
+import { config } from 'dotenv'
+config()
+
 passport.use(
   'google',
   new GoogleStrategy(
