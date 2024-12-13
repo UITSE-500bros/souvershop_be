@@ -4,7 +4,8 @@ import { Request, Response } from 'express'
 
 const authRouter = Router()
 
-authRouter.post('/register', AuthController.register)
+authRouter.post('/register', AuthController.register);
+authRouter.post('/signin', AuthController.login);
 authRouter.get('/login/federated/google', AuthController.googleLogin)
 authRouter.get('/oauth2/redirect/google', AuthController.googleCallback)
 authRouter.get('/logout', (req: Request, res: Response) => {

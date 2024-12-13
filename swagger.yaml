@@ -29,7 +29,7 @@ tags:
     description: Owner APIs
 
 paths:
-  /auth/login:
+  /auth/signin:
     post:
       tags:
         - auth
