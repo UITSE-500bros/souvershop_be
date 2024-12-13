@@ -10,11 +10,8 @@ const PORT = process.env.PORT || 8000;
 const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml')
-
 const file  = fs.readFileSync('./swagger.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
-
-
 
 dotenv.config()
 app.use(json())

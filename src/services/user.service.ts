@@ -91,7 +91,6 @@ class UserService {
                 console.error("Error updating status:", error);
                 return null; // or handle the error as needed
             }
-    
             return ;
         } catch (err) {
             console.error("Unexpected error:", err);

@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || '',
+      callbackURL: '/api/auth/oauth2/redirect/google',
       prompt: 'select_account',
       scope: ["profile", "email"],
     },
