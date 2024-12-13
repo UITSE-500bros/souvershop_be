@@ -179,9 +179,9 @@ paths:
     get:
       tags:
         - category
-      summary: Get category by id
-      description: Get category by id
-      operationId: getCategoryById
+      summary: Get category's products by category_id
+      description: Get category's products by category_id
+      operationId: getProductByCategoryId
       security:
         - api_key: []
       parameters:
@@ -198,7 +198,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/category"
+                $ref: "#/components/schemas/product"
         "400":
           description: Invalid request
     put:
