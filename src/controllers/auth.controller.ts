@@ -4,8 +4,8 @@ import { mailTemplate } from '../constants'
 import { User } from '../models'
 import { mailService, userService } from '../services'
 import { signToken } from '../utils'
-import { passport } from '../constants'
 import { verify } from 'jsonwebtoken'
+import passport from 'passport'
 config()
 const bcrypt = require('bcrypt')
 const saltRounds = 10
@@ -121,10 +121,24 @@ class AuthController {
   }
   // For Googole registration
   async googleLogin(req: Request, res: Response, next: Function) {
-    passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })(req, res, next);
+    passport.authenticate('google', { scope: ["profile", "email"] })(req, res, next)
   }
   async googleCallback(req: Request, res: Response, next: Function) {
-    passport.authenticate('google', async (err, profile, info) => {
+    interface GoogleProfile {
+      id: string;
+      displayName: string;
+      emails?: { value: string }[];
+      photos?: { value: string }[];
+    }
+
+    interface UserData {
+      googleId: string;
+      displayName: string;
+      email: string | null;
+      avatar: string | null;
+    }
+
+    passport.authenticate('google', async (err: Error, profile: GoogleProfile, info: any) => {
       if (err) {
         console.error('Authentication error:', err)
         return res.redirect('/login?error=authentication_failed')
@@ -135,7 +149,7 @@ class AuthController {
         return res.redirect('/login?error=profile_not_found')
       }
       try {
-        const userData = {
+        const userData: UserData = {
           googleId: profile.id,
           displayName: profile.displayName,
           email: profile.emails?.[0]?.value || null,
@@ -160,7 +174,7 @@ class AuthController {
             })
           )
           // Attach user to session
-          req.logIn(user, async (err) => {
+          req.logIn(user, async (err: Error) => {
             if (err) {
               console.error('Login error:', err)
               return res.redirect('/login?error=login_failed')
@@ -173,7 +187,7 @@ class AuthController {
             await mailService.sendVerifiedEmail(user.user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
             return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
           })
-        }else {
+        } else {
           const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
           return res.status(200).json({
             'accessToken': accessToken

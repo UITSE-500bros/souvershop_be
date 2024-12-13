@@ -1,34 +1,22 @@
-var GoogleStrategy = require('passport-google-oidc')
-var passport = require('passport')
-import { config } from 'dotenv'
-config()
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 passport.use(
   'google',
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || '',
-      prompt: 'select_account',
-      scope: ["profile", "email"],
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: process.env.NODE_ENV === 'production'
+        ? process.env.GOOGLE_CALLBACK_URL
+        : 'http://localhost:8000/api/auth/oauth2/redirect/google',
     },
-    async (issuer, profile, context, idToken, accessToken, refreshToken, done) => {
-      console.log('profile', profile) 
+    async (issuer, profile, done) => {
       try {
-        return done(null, profile)
-      } catch (err) {
-        done(err)
+        console.log('Profile:', profile);
+      } catch (error) {
+        console.error('Google OAuth Error:', error);
       }
     }
   )
-)
-passport.serializeUser((user: any, done) => {
-  done(null, user)
-})
-
-passport.deserializeUser((user: any, done) => {
-  done(null, user)
-})
-
-export default passport
+);

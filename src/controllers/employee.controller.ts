@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { employeeService } from '../services';
 
 class EmployeeController {
-    
-    async getEmployees(req: Request, res : Response) {
-        const employees = await employeeService.getEmployee();
-        res.json(employees);
-    }
+    async updateOrderStatus(req: Request, res: Response) {}
+    async updateProfile(req: Request, res: Response) {}
+    async getProfile(req: Request, res: Response) {}
+    async getOrders(req: Request, res: Response) {}
+    async getOrderDetail(req: Request, res: Response) {}
+
 }
 const employeeController = new EmployeeController();
 export default employeeController;

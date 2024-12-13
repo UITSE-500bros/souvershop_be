@@ -1,62 +1,87 @@
-import express, { Express, Request, Response, json } from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import router from './routes'
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express, { Express, Request, Response, json } from 'express';
 import session from 'express-session';
-dotenv.config()
+import fs from 'fs';
 import passport from 'passport';
-const app: Express = express()
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yaml';
+import router from './routes';
+dotenv.config();
+
+const app: Express = express();
 const PORT = process.env.PORT || 8000;
-const swaggerUi = require('swagger-ui-express');
-const fs = require("fs")
-const YAML = require('yaml')
-const file  = fs.readFileSync('./swagger.yaml', 'utf8')
-const swaggerDocument = YAML.parse(file)
 
-dotenv.config()
-app.use(json())
-app.use(cors())
-app.use(function (req, res, next) {
+// Load Swagger Document
+const file = fs.readFileSync('./swagger.yaml', 'utf8');
+const swaggerDocument = YAML.parse(file);
 
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
 
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+// Register Google Strategy
+passport.use(
+  'google',
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: process.env.NODE_ENV === 'production'
+        ? 'https://souvershop-ff3c13f9139a.herokuapp.com/api/auth/oauth2/redirect/google'
+        : 'http://localhost:8000/api/auth/oauth2/redirect/google',
+      scope: ['email', 'profile'],
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        console.log('Google Profile:', profile);
+        done(null, profile); // Pass the profile to the next middleware
+      } catch (error) {
+        console.error('Google OAuth Error:', error);
+        done(error);
+      }
+    }
+  )
+);
 
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+// Middleware
+app.use(json());
+app.use(cors({
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
 
-    // Pass to next layer of middleware
-    next();
-});
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key', // Use a strong secret in production
-    resave: false, // Don't save the session if it wasn't modified
-    saveUninitialized: false, // Don't create sessions for unauthenticated users
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
-      httpOnly: true, // Prevents client-side JS from accessing cookies
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'strict',
     },
   })
 );
-
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
-
+// Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.get('/', (req: Request, res: Response) => {
-  
-  return res.status(200).json({message: 'Welcome to E-commerce API'});
 
-})
+// Routes
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ message: 'Welcome to E-commerce API' });
+});
+
 app.use('/api', router);
+
+// Error Handling Middleware
+app.use((err: Error, req: Request, res: Response, next: Function) => {
+  console.error(err.stack); // Log error
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
+// Start Server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`)
-})
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

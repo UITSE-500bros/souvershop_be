@@ -1,11 +1,7 @@
-
 class CustomerController {
 
     async getProfile(req, res) {
         // get customer profile
-    }
-    async checkOut(req, res) {
-        // checkout
     }
     async updateProfile(req, res) {
         // update customer profile
@@ -19,5 +15,5 @@ class CustomerController {
     async cancelOrder(req, res) {
         // cancel customer order
     }
-    
+
 }
