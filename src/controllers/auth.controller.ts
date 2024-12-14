@@ -181,9 +181,6 @@ class AuthController {
               user_avatar: userData.avatar,
               user_name: userData.displayName,
               user_email: userData.email,
-              user_password: '',
-              user_phoneNumber: '',
-              user_role: 14,
               created_at: new Date(),
               updated_at: new Date(),
               googleId: userData.googleId
@@ -201,10 +198,14 @@ class AuthController {
               payload: { _id: user.user_id as string, user_role: 14 }
             })
             await mailService.sendVerifiedEmail(user.user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
+            await userService.updateUserTokens(user, { verifyToken: verifiedEmailToken });
             return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
           })
         } else {
           const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
+          const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
+          // Now that accessToken and refreshToken are strings, pass them to the service
+          await userService.updateUserTokens(user, { accessToken, refreshToken });
           return res.status(200).json({
             'accessToken': accessToken
           })

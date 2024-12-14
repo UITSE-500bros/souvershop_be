@@ -222,6 +222,38 @@ paths:
                     format: string
         "400":
           description: Invalid 
+  /auth/verify-email:
+    post:
+      tags:
+        - auth
+      summary: Verify email
+      description: Verify email
+      operationId: verifyEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                verifytoken:
+                  type: string
+                  format: string
+              required:
+                - verifytoken
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    format: string
+        "400":
+          description: Invalid email/password supplied
   /category:
     get:
       tags:
