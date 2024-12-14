@@ -39,7 +39,7 @@ class ReceiptController {
       const secretKey: string = process.env.VNP_HASH_SECRET
       const vnpUrl: string = process.env.VNP_URL
       const returnUrl: string = process.env.VNP_RETURN_URL
-      const orderId = moment(date).format('DDHHmmss')
+      const orderId = moment(date).format('DDHHmmss');
       const amount: number = req.body.amount;
       if ( amount < 5000) {
         return res.status(404).json("The amount must be larger than 5000 vnd")
@@ -57,7 +57,7 @@ class ReceiptController {
         vnp_Locale: locale,
         vnp_CurrCode: currCode,
         vnp_TxnRef: orderId,
-        vnp_OrderInfo: `Thanh toan cho ma GD:${orderId}`,
+        vnp_OrderInfo: `Thanh toan cho ma GD:${orderId}, ${JSON.stringify(req.body.products)}`,
         vnp_OrderType: 'other',
         vnp_Amount: amount * 100,
         vnp_ReturnUrl: returnUrl,
@@ -91,14 +91,15 @@ class ReceiptController {
     const hmac = crypto.createHmac('sha512', process.env.VNP_HASH_SECRET as string);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
+    
+
     if (secureHash === signed) {
-      res.send('Payment success');
+      console.log(vnp_Params['vnp_OrderInfo']);
+      return res.status(200).json('Payment success');
     } else {
-      res.send('Invalid signature');
+      return res.status(404).json('Invalid payment');
     }
   }
-
-  //VNPAY with qrcode
 
 }
 const receiptController = new ReceiptController()

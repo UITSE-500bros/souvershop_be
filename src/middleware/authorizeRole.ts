@@ -1,25 +1,31 @@
-// middleware/authorizeRole.ts
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-
-declare global {
-    namespace Express {
-        interface Request {
-            user?: User;
-        }
-    }
+interface CustomRequest extends Request {
+  userId?: string;
 }
 
-const authorizeRole = (allowedRoles: string[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const user = req.user;
+const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
+  try {
+    const authHeader = req.headers.authorization;
 
-        if (!user || !allowedRoles.includes("")) {
-            return res.status(403).json({ message: "You don't have the required permissions." });
-        }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ message: 'Unauthorized: Missing or invalid token' });
+      return; // Ensure function exits after sending a response
+    }
 
-        return next(); // User is authorized; proceed to the controller
-    };
+    const token = authHeader.split(' ')[1];
+
+    // Replace 'your-secret-key' with your actual JWT secret
+    const decoded = jwt.verify(token, 'your-secret-key') as { user_id: string };
+
+    req.userId = decoded.user_id; // Attach user_id to request
+
+    next(); // Proceed to the next middleware/controller
+  } catch (error) {
+    res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    return; // Ensure function exits after sending a response
+  }
 };
 
-export default authorizeRole;
+export default authMiddleware;

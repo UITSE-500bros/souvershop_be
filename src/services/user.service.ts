@@ -2,19 +2,8 @@ import { User } from "../models";
 import { supabase } from "../utils";
 
 class UserService {
-    // async updateUser(userId: any, arg1: { verify: any; verifiedEmailToken: string; }) {
-    //     const { error} = await supabase.from('user')
-    //                         .update({
-    //                             account_status: arg1.verify,
-    //                             verifyToken: arg1.verifiedEmailToken
-    //                         })
-    //                         .eq('user_id', userId);
-    //     if (error) {
-    //         return error.message;
-    //     }
-    // }
-    async createUser(user: User):Promise<User | null> {
-        const { error } = await supabase
+    async createUser(user: User){
+        const { data, error } = await supabase
             .from('user')
             .insert({
                 user_email: user.user_email,
@@ -22,12 +11,13 @@ class UserService {
                 create_at: user.created_at,
                 update_at: user.updated_at
             })
-            .single();
+            .select();
+        const newUser:User = data[0];
         if (error) {
             console.log(error);
             return null;
         }
-        return { ...user, user_id: user.user_id };
+        return newUser;
     }
 
     async getUserByEmail(email: string):Promise<User | null> {
@@ -61,15 +51,16 @@ class UserService {
             const { error } = await supabase
                 .from('user')
                 .update({
-                    accessToken: tokens.accessToken,
-                    resetPasToken: tokens.resetPasToken,  
-                    verifyToken: tokens.verifyToken   
+                    access_token: tokens.accessToken,
+                    refresh_token: tokens.refreshToken,
+                    reset_pass_token: tokens.resetPasToken,  
+                    verify_token: tokens.verifyToken   
                 })
                 .eq('user_id', user.user_id);
     
             if (error) {
                 console.error("Error updating tokens:", error);
-                return null; // or handle the error as needed
+                return null;
             }
     
             return ;
@@ -78,12 +69,12 @@ class UserService {
             return null;
         }
     }
-    async updateStatus(user: User) {
+    async updateStatus(user: User, status: string) {
         try {
             const { error } = await supabase
                 .from('user')
                 .update({
-                    user_account_status: 'active'
+                    user_account_status: status,
                 })
                 .eq('user_id', user.user_id);
     

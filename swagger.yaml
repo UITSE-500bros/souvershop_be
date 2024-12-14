@@ -15,8 +15,10 @@ tags:
     description: Auth APIs
   - name: product
     description: Product APIs
-  - name: Customer
+  - name: customer
     description: Customer APIs
+  - name: employee
+    description: Employee APIs
   - name: grn
     description: GRN APIs
   - name: receipt
@@ -27,7 +29,6 @@ tags:
     description: Category APIs
   - name: owner
     description: Owner APIs
-
 paths:
   /auth/signin:
     post:
@@ -126,6 +127,101 @@ paths:
       responses:
         "200":
           description: successful operation
+  /auth/forgot-password:
+    post:
+      tags:
+        - auth
+      summary: Forgot password
+      description: Forgot password
+      operationId: forgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_email:
+                  type: string
+                  format: email
+              required:
+                - user_email
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    format: string
+        "400":
+          description: Invalid email/password supplied
+  /auth/reset-password:
+    post:
+      tags:
+        - auth
+      summary: Reset password
+      description: Reset password
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_email:
+                  type: string
+                  format: email
+                user_password:
+                  type: string
+                  format: password
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
+                reset_pass_token:
+                  type: string
+                  format: string
+              required:
+                - user_email
+                - user_password
+                - reset_pass_token
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    format: string
+        "400":
+          description: Invalid email/password supplied
+  /auth/refreshtoken:
+    post:
+      tags:
+        - auth
+      summary: Refresh token
+      description: Refresh token
+      operationId: refreshToken
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    format: string
+        "400":
+          description: Invalid 
   /category:
     get:
       tags:
@@ -973,6 +1069,80 @@ paths:
                   format: number
               required:
                 - amount
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Invalid request
+  /receipt/verify_payment:
+    post:
+      tags:
+        - Customer
+      summary: Verify a transaction
+      description: Verify a transaction
+      operationId: verifyTransaction
+      security:
+        - api_key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: number
+                payment_id:
+                  type: string
+                  format: string
+              required:
+                - amount
+                - payment_id
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Invalid request
+  /receipt/payment-return:
+    post:
+      tags:
+        - Customer
+      summary: Payment return
+      description: Payment return
+      operationId: paymentReturn
+      security:
+        - api_key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: number
+                payment_id:
+                  type: string
+                  format: string
+              required:
+                - amount
+                - payment_id
         required: true
       responses:
         "200":

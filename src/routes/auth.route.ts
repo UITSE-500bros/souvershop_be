@@ -21,4 +21,7 @@ authRouter.get('/logout', (req: Request, res: Response) => {
     })
   })
 })
+authRouter.post('/forgot-password', AuthController.forgotPassword)
+authRouter.get('/verify-email', AuthController.verifyEmail)
+authRouter.post('/refresh-token', AuthController.refreshToken)
 export default authRouter
