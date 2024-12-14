@@ -19,7 +19,7 @@ interface UserParams {
     //GoogleId
     googleId?: string | "";
     
-    account_status?: string | "";
+    user_account_status?: string | "";
     resetPasToken?: string | "";
     accessToken?: string | "";
     verifyToken?: string | "";
@@ -43,7 +43,7 @@ class User {
 
     staff_salary: number | "";
 
-    account_status: string | "" ;
+    user_account_status: string | "" ;
     resetPasToken: string | "";
     accessToken: string | "" ;
     verifyToken: string | "";
@@ -65,7 +65,7 @@ class User {
 
         this.staff_salary = params.staff_salary || "";
 
-        this.account_status = params.account_status || "";
+        this.user_account_status = params.user_account_status || "";
         this.resetPasToken = params.resetPasToken || "";
         this.accessToken = params.accessToken || "";
         this.verifyToken = params.verifyToken || "";
