@@ -4,7 +4,7 @@ import { mailTemplate } from '../constants'
 import { User } from '../models'
 import { mailService, userService } from '../services'
 import { signToken } from '../utils'
-import { verify } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import passport from 'passport'
 config()
 const bcrypt = require('bcrypt')
@@ -73,13 +73,12 @@ class AuthController {
   }
 
   async verifyEmail(req: Request, res: Response) {
-    const { verifytoken } = req.params
+    const { verifytoken } = req.body
     if (!verifytoken) {
       return res.status(400).json({ message: 'Invalid token' })
     }
 
-    const payload = await verify(verifytoken, process.env.EMAIL_SECRET_HASH as string);
-
+    const payload = jwt.verify(verifytoken, process.env.EMAIL_SECRET_HASH);
     if (typeof payload !== 'string' && payload && 'user_role' in payload && '_id' in payload) {
       const userId = payload._id;
       const user = await userService.getUserByID(userId)
@@ -114,7 +113,7 @@ class AuthController {
     if (!refreshToken) {
       return res.status(400).json({ message: 'Please provide refresh token' })
     }
-    const payload = await verify(refreshToken, process.env.REFRESH_SECRET_HASH as string);
+    const payload = jwt.verify(refreshToken, process.env.VERIFY_SECRET_HASH);
     if (typeof payload !== 'string' && payload && 'user_role' in payload && '_id' in payload) {
       const userId = payload._id;
       const user = await userService.getUserByID(userId)
