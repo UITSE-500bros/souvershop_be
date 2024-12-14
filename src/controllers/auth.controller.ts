@@ -206,6 +206,7 @@ class AuthController {
           const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
           // Now that accessToken and refreshToken are strings, pass them to the service
           await userService.updateUserTokens(user, { accessToken, refreshToken });
+          res.redirect('http://localhost:5173')
           return res.status(200).json({
             'accessToken': accessToken
           })
