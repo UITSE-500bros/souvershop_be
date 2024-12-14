@@ -52,7 +52,6 @@ class AuthController {
       return res.status(400).json({ message: 'Please fill all fields' })
     }
     const user = await userService.getUserByEmail(user_email)
-    console.log(user)
     if (!user) {
       return res.status(400).json({ message: 'User does not exist' })
     }
@@ -62,19 +61,18 @@ class AuthController {
     }
     if (user.user_account_status !== 'active') {
       if (user.user_account_status === 'verified') {
-        const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
-        const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
-
-        // Now that accessToken and refreshToken are strings, pass them to the service
-        await userService.updateUserTokens(user, { accessToken, refreshToken });
         await userService.updateStatus(user, 'active');
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'none', secure: true })
-        return res.status(200).json({ accessToken, refreshToken })
-      }else {
+
+      } else {
         return res.status(400).json({ message: 'Please verify your email' })
       }
     }
-    return res.status(400).json({ message: 'error' })
+    const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
+    const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
+    // Now that accessToken and refreshToken are strings, pass them to the service
+    await userService.updateUserTokens(user, { accessToken, refreshToken });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'none', secure: true })
+    return res.status(200).json({ accessToken, refreshToken });
   }
 
   async verifyEmail(req: Request, res: Response) {
