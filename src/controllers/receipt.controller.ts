@@ -25,31 +25,34 @@ function sortObject(obj: { [key: string]: any }): { [key: string]: string } {
   return sorted;
 }
 class ReceiptController {
-  async createPaymentIntent(req: Request, res: Response) { 
+  async createPaymentIntent(req: Request, res: Response) {
 
   }
   // VNPAY with card
   async createPaymentUrl(req: Request, res: Response) {
+    const amount: number = req.body.amount;
+    if (amount < 5000) {
+      return res.status(404).json("The amount must be larger than 5000 vnd")
+    }
+
+    process.env.TZ = 'Asia/Ho_Chi_Minh'
+    const date = new Date()
+    const createDate = moment(date).format('YYYYMMDDHHmmss')
+    const ipAddr = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
+    const tmnCode: string = process.env.VNP_TMN_CODE
+    const secretKey: string = process.env.VNP_HASH_SECRET
+    const vnpUrl: string = process.env.VNP_URL
+    const returnUrl: string = process.env.VNP_RETURN_URL
+    const orderId = moment(date).format('DDHHmmss');
+    
+
+    const bankCode: string = req.body.bankCode
+    let locale: string = req.body.language
+    if (!locale) {
+      locale = 'vn'
+    }
+    const currCode = 'VND'
     try {
-      process.env.TZ = 'Asia/Ho_Chi_Minh'
-      const date = new Date()
-      const createDate = moment(date).format('YYYYMMDDHHmmss')
-      const ipAddr = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
-      const tmnCode: string = process.env.VNP_TMN_CODE
-      const secretKey: string = process.env.VNP_HASH_SECRET
-      const vnpUrl: string = process.env.VNP_URL
-      const returnUrl: string = process.env.VNP_RETURN_URL
-      const orderId = moment(date).format('DDHHmmss');
-      const amount: number = req.body.amount;
-      if ( amount < 5000) {
-        return res.status(404).json("The amount must be larger than 5000 vnd")
-      }
-      const bankCode: string = req.body.bankCode
-      let locale: string = req.body.language
-      if (!locale) {
-        locale = 'vn'
-      }
-      const currCode = 'VND'
       const vnp_Params: Record<string, string | number> = {
         vnp_Version: '2.1.0',
         vnp_Command: 'pay',
@@ -73,7 +76,6 @@ class ReceiptController {
       const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
       sortedParams['vnp_SecureHash'] = signed
       const paymentUrl = `${vnpUrl}?${qs.stringify(sortedParams, { encode: false })}`;
-      
       return res.status(200).json(paymentUrl);
     } catch (error) {
       return res.status(500).json(error);
@@ -91,7 +93,7 @@ class ReceiptController {
     const hmac = crypto.createHmac('sha512', process.env.VNP_HASH_SECRET as string);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
-    
+
 
     if (secureHash === signed) {
       console.log(vnp_Params['vnp_OrderInfo']);
