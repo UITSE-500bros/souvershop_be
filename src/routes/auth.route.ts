@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { AuthController } from '../controllers'
 import { Request, Response } from 'express'
+import authMiddleware, { AuthenticatedRequest } from '../middleware/authorizeRole';
 
 const authRouter = Router()
 
@@ -24,4 +25,7 @@ authRouter.get('/logout', (req: Request, res: Response) => {
 authRouter.post('/forgot-password', AuthController.forgotPassword)
 authRouter.post('/verify-email', AuthController.verifyEmail)
 authRouter.post('/refresh-token', AuthController.refreshToken)
+authRouter.post('/test',authMiddleware, function(req: AuthenticatedRequest, res) {
+  console.log(req.customerId);
+})
 export default authRouter
