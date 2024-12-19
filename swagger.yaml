@@ -46,10 +46,14 @@ paths:
                 user_email:
                   type: string
                   format: email
+                  default: "uio43767@kisoq.com"
+                  example: "uio43767@kisoq.com"
                 user_password:
                   type: string
                   format: password
                   pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$'
+                  default: "Souvershop@123"
+                  example: "Souvershop@123"
               required:
                 - user_email
                 - user_password
