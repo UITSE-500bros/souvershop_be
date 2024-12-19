@@ -29,6 +29,7 @@ tags:
     description: Category APIs
   - name: owner
     description: Owner APIs
+
 paths:
   /auth/signin:
     post:
@@ -127,7 +128,7 @@ paths:
       description: Logout from the application with Google
       operationId: logout
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -212,7 +213,7 @@ paths:
       description: Refresh token
       operationId: refreshToken
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -266,7 +267,7 @@ paths:
       description: Get all categories
       operationId: getCategories
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -285,7 +286,7 @@ paths:
       description: Create a new category
       operationId: createCategory
       security:
-        - api_key: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -315,7 +316,7 @@ paths:
       description: Get category's products by category_id
       operationId: getProductByCategoryId
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: category_id
           in: path
@@ -340,7 +341,7 @@ paths:
       description: Update category by id
       operationId: updateCategoryById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: category_id
           in: path
@@ -377,7 +378,7 @@ paths:
       description: Delete category by id
       operationId: deleteCategoryById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: category_id
           in: path
@@ -446,7 +447,7 @@ paths:
       description: Get all products
       operationId: getProducts
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -466,7 +467,7 @@ paths:
       description: Get product by id
       operationId: getProductById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: product_id
           in: path
@@ -491,7 +492,7 @@ paths:
       description: Update product by id
       operationId: updateProductById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: product_id
           in: path
@@ -548,7 +549,7 @@ paths:
       description: Delete product by id
       operationId: deleteProductById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: product_id
           in: path
@@ -600,7 +601,7 @@ paths:
       description: Get all GRNs with optional filtering by year and month
       operationId: getGrns
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: year
           in: query
@@ -639,7 +640,7 @@ paths:
       description: Get GRN by id
       operationId: getGrnById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: grn_id
           in: path
@@ -664,7 +665,7 @@ paths:
       description: Update GRN by id
       operationId: updateGrnById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: grn_id
           in: path
@@ -709,7 +710,7 @@ paths:
       description: Delete GRN by id
       operationId: deleteGrnById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: grn_id
           in: path
@@ -762,7 +763,7 @@ paths:
       description: Get all reviews
       operationId: getReviews
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -782,7 +783,7 @@ paths:
       description: Get top reviews
       operationId: getTopReviews
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -802,7 +803,7 @@ paths:
       description: Get reviews by customer id
       operationId: getReviewsByCustomerId
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: customer_id
           in: path
@@ -830,7 +831,7 @@ paths:
       description: Get receipts by product id
       operationId: getReceiptsByProductId
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: product_id
           in: path
@@ -940,7 +941,7 @@ paths:
       description: Get all employees
       operationId: getEmployees
       security:
-        - api_key: []
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -960,7 +961,7 @@ paths:
       description: Update employee by id
       operationId: updateEmployeeById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: employee_id
           in: path
@@ -1017,7 +1018,7 @@ paths:
       description: Create a new employee
       operationId: createEmployee
       security:
-        - api_key: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -1071,7 +1072,7 @@ paths:
       description: Delete employee by id
       operationId: deleteEmployeeById
       security:
-        - api_key: []
+        - BearerAuth: []
       parameters:
         - name: employee_id
           in: path
@@ -1093,7 +1094,7 @@ paths:
       description: Create a transaction
       operationId: createTransaction
       security:
-        - api_key: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -1126,7 +1127,7 @@ paths:
       description: Verify a transaction
       operationId: verifyTransaction
       security:
-        - api_key: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -1163,7 +1164,7 @@ paths:
       description: Payment return
       operationId: paymentReturn
       security:
-        - api_key: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -1436,15 +1437,7 @@ components:
         - blocked
         - deleted
   securitySchemes:
-    # petstore_auth:
-    #   type: oauth2
-    #   flows:
-    #     implicit:
-    #       authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
-    #       scopes:
-    #         'write:pets': modify pets in your account
-    #         'read:pets': read your pets
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
