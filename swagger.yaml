@@ -266,8 +266,6 @@ paths:
       summary: Get all categories
       description: Get all categories
       operationId: getCategories
-      security:
-        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -315,8 +313,6 @@ paths:
       summary: Get category's products by category_id
       description: Get category's products by category_id
       operationId: getProductByCategoryId
-      security:
-        - BearerAuth: []
       parameters:
         - name: category_id
           in: path
@@ -446,8 +442,6 @@ paths:
       summary: Get all products
       description: Get all products
       operationId: getProducts
-      security:
-        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -466,8 +460,6 @@ paths:
       summary: Get product's detail by id
       description: Get product by id
       operationId: getProductById
-      security:
-        - BearerAuth: []
       parameters:
         - name: product_id
           in: path
