@@ -142,12 +142,11 @@ class AuthController {
         payload: { _id: user_id_token , user_role: 2 },
       });
       // Return the new accessToken to the client
-      res.status(200).json({ accessToken: newAccessToken });
+      return res.status(200).json({ accessToken: newAccessToken });
     } catch (error) {
       console.error('Error refreshing token:', error);
       return res.status(500).json({ message: 'Could not refresh token' });
     }
-    return res.status(200).json({ message: 'Token refreshed successfully' });
   }
   // For Googole registration
   async googleLogin(req: Request, res: Response, next: Function) {
