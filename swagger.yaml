@@ -442,6 +442,8 @@ paths:
       summary: Get all products
       description: Get all products
       operationId: getProducts
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
