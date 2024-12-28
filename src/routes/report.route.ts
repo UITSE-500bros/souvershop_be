@@ -8,4 +8,14 @@ router.get('/', reportController.getReport);
 // cần truyền đúng format ngày dd/mm/yyyy
 // hoặc không truyền gì để lấy toàn bộ
 
+// các field json như sau
+// buy_total: tổng tiền nhập hàng
+// sale_total: tổng tiền bán hàng
+// category_count: số lượng danh mục
+// buy_quantity: số lượng hàng đã nhập
+// grn_quantity: số lượng phiếu nhập hàng
+// receipt_quantity: số lượng hóa đơn
+
+// không có số lượng hàng đã bán vì không có product_list trong bảng receipt
+
 export default router;
