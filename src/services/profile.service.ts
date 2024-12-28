@@ -20,7 +20,7 @@ class ProfileService {
   }
 
   async updateAvatar(userId: string, file: Express.Multer.File): Promise<User> {
-    // 1. Tải file lên Supabase Storage
+
     const filePath = `${userId}`;
     const {  error: uploadError } = await supabase.storage 
       .from('avatars')
@@ -33,14 +33,13 @@ class ProfileService {
       throw uploadError;
     }
 
-    // 2. Lấy URL công khai của file đã tải lên
     const { data } = supabase.storage
       .from('avatars')
       .getPublicUrl(filePath);
 
     const user_avatar = data.publicUrl;
 
-    // 3. Cập nhật user_avatar trong bảng user
+
     const { data: updateData, error } = await supabase
       .from('user')
       .update({ user_avatar: user_avatar })

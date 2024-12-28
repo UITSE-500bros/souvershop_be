@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import ProfileService from '../services/profile.service';
+import multer from 'multer';
 
 class ProfileController {
   async updateName(req: Request, res: Response): Promise<Response> {
@@ -27,7 +28,11 @@ class ProfileController {
 
       return res.status(200).json(updatedUser);
     } catch (err: any) {
-      return res.status(500).json({ error: err.message || 'Failed to upload avatar' });
+      // Bắt lỗi từ multer và trả về thông báo lỗi cụ thể
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ error: err.message });
+      }
+      return res.status(500).json({ error: 'Failed to upload avatar' });
     }
   }
 }
