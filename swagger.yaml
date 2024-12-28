@@ -226,7 +226,7 @@ paths:
                     type: string
                     format: string
         "400":
-          description: Invalid 
+          description: Invalid
   /auth/verify-email:
     post:
       tags:
@@ -1187,8 +1187,84 @@ paths:
           description: Invalid request
         "500":
           description: Invalid request
+
+  /banner:
+    get:
+      tags:
+        - owner
+      summary: Get all banners
+      description: Get all banners
+      operationId: getBanners
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/banner"
+        "400":
+          description: Invalid request
+    post:
+      tags:
+        - Banners
+      summary: Upload a new banner
+      description: Upload a new banner for the website. The banner includes an image and additional metadata.
+      operationId: uploadBanner
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data: # Use multipart/form-data for file uploads
+            schema:
+              type: object
+              properties:
+                banner_image:
+                  type: string
+                  format: binary # Specifies file upload
+                  description: The image file for the banner.
+                banner_file:
+                  type: string
+                  format: binary
+                  description: Additional file for the banner (optional).
+                banner_link:
+                  type: string
+                  format: uri
+                  description: The link associated with the banner.
+              required:
+                - banner_image
+                - banner_link
+      responses:
+        "200":
+          description: Banner uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/banner"
+        "400":
+          description: Invalid request. Please ensure all required fields are provided.
+        "401":
+          description: Unauthorized. Access token is missing or invalid.
+        "500":
+          description: Internal server error. Something went wrong on the server.
 components:
   schemas:
+    banner:
+      type: object
+      properties:
+        banner_id:
+          type: string
+          format: uuid
+        banner_image:
+          type: string
+          format: string
+        banner_link:
+          type: string
+          format: string
     user:
       type: object
       properties:
