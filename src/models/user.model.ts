@@ -6,10 +6,10 @@ interface UserParams {
     user_email?: string | "";
     user_password?: string | "";
     user_role?: number | 0;
-    user_phoneNumber?: string | "";
+    user_phone_number?: string | "";
 
     //customer
-    customer_address?: string | "";
+    user_address?: string | "";
     customer_productList?: ProductList[] | "";
     customer_favouriteList?: string[] | "";
 
@@ -34,10 +34,10 @@ class User {
     user_email: string | "";
     user_password: string | "";
     user_role: number | 0;
-    user_phoneNumber: string | "";
+    user_phone_number: string | "";
 
 
-    customer_address: string | "";
+    user_address: string | "";
     customer_productList: ProductList[] | "";
     customer_favouriteList: string[] | "" ;
 
@@ -57,9 +57,9 @@ class User {
         this.user_email = params.user_email || "";
         this.user_password = params.user_password || "";
         this.user_role = params.user_role || 0;
-        this.user_phoneNumber = params.user_phoneNumber || "";
+        this.user_phone_number = params.user_phone_number || "";
 
-        this.customer_address = params.customer_address || "";
+        this.user_address = params.user_address || "";
         this.customer_productList = params.customer_productList || "";
         this.customer_favouriteList = params.customer_favouriteList || "";
 

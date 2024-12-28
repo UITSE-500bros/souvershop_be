@@ -3,36 +3,37 @@ import ProfileService from '../services/profile.service';
 import multer from 'multer';
 
 class ProfileController {
-  async updateName(req: Request, res: Response): Promise<Response> {
+  async updateProfile(req: Request, res: Response): Promise<Response> {
     const { user_id } = req.params;
-    const { user_name } = req.body;
-    try {
-      const updatedUser = await ProfileService.updateName(user_id, user_name);
-      return res.status(200).json(updatedUser);
-    } catch (err: any) {
-      return res.status(404).json({ error: err.message });
-    }
-  }
-
-  async updateAvatar(req: Request, res: Response): Promise<Response> {
-    const { user_id } = req.params;
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
+    const { user_name, user_address, user_phone_number } = req.body;
 
     try {
-      const file = req.file;
+      // kiểm tra có upload avatar không
+      let file: Express.Multer.File | undefined = undefined;
+      if (req.file) {
+        file = req.file;
+      }
 
-      const updatedUser = await ProfileService.updateAvatar(user_id, file);
+      // tạo object các field cần update
+      const updatedFields = {
+        user_name,
+        user_address,
+        user_phone_number,
+        file,
+      };
+
+      const updatedUser = await ProfileService.updateProfile(
+        user_id,
+        updatedFields
+      );
 
       return res.status(200).json(updatedUser);
     } catch (err: any) {
-      // Bắt lỗi từ multer và trả về thông báo lỗi cụ thể
+      // cho multer kiểm tra định dạng file
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ error: err.message });
       }
-      return res.status(500).json({ error: 'Failed to upload avatar' });
+      return res.status(500).json({ error: err.message || 'Failed to update profile' });
     }
   }
 }
