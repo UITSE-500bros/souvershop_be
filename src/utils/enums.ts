@@ -12,3 +12,8 @@ export enum AccountStatus {
     deleted = 'Deleted',
     verify = 'Verified'
 }
+export enum UserRoles {
+    owner = 'Owner',
+    employee = 'Employee',
+    customer = 'Customer',
+}

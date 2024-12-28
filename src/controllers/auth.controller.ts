@@ -67,12 +67,28 @@ class AuthController {
         return res.status(400).json({ message: 'Please verify your email' })
       }
     }
-    const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
-    const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
-    // Now that accessToken and refreshToken are strings, pass them to the service
+    const accessToken = await signToken({
+      type: 'accessToken',
+      payload: { _id: user.user_id, user_role: user.user_role }
+    });
+    const refreshToken = await signToken({
+      type: 'refreshToken',
+      payload: { _id: user.user_id, user_role: user.user_role }
+    });
+
+    // Save tokens in the service (optional, if needed for token tracking/revocation)
     await userService.updateUserTokens(user, { accessToken, refreshToken });
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'none', secure: true })
-    return res.status(200).json({ accessToken, refreshToken });
+
+    // Set the refresh token as an HTTP-only cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'none', // Use 'strict' or 'lax' if cross-site requests are not needed
+      secure: true      // Ensures cookie is sent only over HTTPS
+    });
+
+    // Only send the access token in the JSON response
+    return res.status(200).json({ accessToken });
+
   }
 
   async verifyEmail(req: Request, res: Response) {
@@ -202,14 +218,25 @@ class AuthController {
             return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
           })
         } else {
-          const accessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
-          const refreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
-          // Now that accessToken and refreshToken are strings, pass them to the service
+          const accessToken = await signToken({
+            type: 'accessToken',
+            payload: { _id: user.user_id, user_role: user.user_role }
+          });
+          const refreshToken = await signToken({
+            type: 'refreshToken',
+            payload: { _id: user.user_id, user_role: user.user_role }
+          });
+
+          // Save tokens in the service (optional, if needed for token tracking/revocation)
           await userService.updateUserTokens(user, { accessToken, refreshToken });
-          res.redirect('http://localhost:5173')
-          return res.status(200).json({
-            'accessToken': accessToken
-          })
+
+          res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true
+          });
+
+          return res.status(200).json({ accessToken });
         }
       } catch (error) {
         console.error('Database error:', error)
@@ -217,7 +244,5 @@ class AuthController {
       }
     })(req, res, next)
   }
-  //For Facebook registration
-
 }
 export default new AuthController()

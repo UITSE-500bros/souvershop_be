@@ -12,14 +12,44 @@ class UserService {
                 update_at: user.updated_at
             })
             .select();
-        const newUser:User = data[0];
+        const newUser: User = data[0];
         if (error) {
             console.log(error);
+            return null;
+        }
+        const res = await this.signUserRole(newUser, 'customer');
+        if (!res) {
             return null;
         }
         return newUser;
     }
 
+    async signUserRole(user: User, role: string) {
+        let role_id: number;
+        switch (role) {
+            case 'employee':
+                role_id = 1;
+                break;
+            case 'customer':
+                role_id = 2;
+                break;
+            default:
+                role_id = 3;
+                break;
+        }
+        const { data, error } = await supabase
+            .from('role_user')
+            .insert({
+                user_id: user.user_id,
+                role_id: role_id
+            })
+            .select();
+        if (error) {
+            console.log(error);
+            return null;
+        }
+        return data;
+    }
     async getUserByEmail(email: string):Promise<User | null> {
         let { data: user, error } = await supabase
             .from('user')
