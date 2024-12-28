@@ -7,6 +7,7 @@ import grnService from "./grn.service";
 import reviewService from "./review.service";
 import bannerService from "./banner.service";
 import profileService from "./profile.service";
+import reportService from "./report.service";
 
 export {
     productService,
@@ -17,5 +18,6 @@ export {
     grnService,
     reviewService,
     bannerService,
-    profileService
+    profileService,
+    reportService
 }
