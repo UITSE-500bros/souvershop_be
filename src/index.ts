@@ -8,6 +8,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yaml';
 import router from './routes';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app: Express = express();
@@ -45,6 +46,7 @@ passport.use(
 
 // Middleware
 app.use(json());
+app.use(cookieParser());
 app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,

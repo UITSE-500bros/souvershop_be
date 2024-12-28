@@ -6,6 +6,7 @@ import { mailService, userService } from '../services'
 import { signToken } from '../utils'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
+import { RefreshtokenRequest } from '../type'
 config()
 const bcrypt = require('bcrypt')
 const saltRounds = 10
@@ -79,12 +80,15 @@ class AuthController {
     // Save tokens in the service (optional, if needed for token tracking/revocation)
     await userService.updateUserTokens(user, { accessToken, refreshToken });
 
+    
     // Set the refresh token as an HTTP-only cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'none', // Use 'strict' or 'lax' if cross-site requests are not needed
       secure: true      // Ensures cookie is sent only over HTTPS
     });
+
+    console.log(res.cookie)
 
     // Only send the access token in the JSON response
     return res.status(200).json({ accessToken });
@@ -128,33 +132,28 @@ class AuthController {
     await mailService.sendResetPasswordEmail(user_email, 'Reset your password', mailTemplate(resetPasToken))
     return res.status(200).json({ message: 'Please check your email to reset password' })
   }
-  async refreshToken(req: Request, res: Response) {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      return res.status(400).json({ message: 'Please provide refresh token' })
+  async refreshToken(req: RefreshtokenRequest, res: Response) {
+    try {
+      const user_id_token = req.userId;
+      
+      // Issue new accessToken (and optionally a new refreshToken if you rotate them)
+      const newAccessToken = await signToken({
+        type: 'accessToken',
+        payload: { _id: user_id_token , user_role: 2 },
+      });
+      // Return the new accessToken to the client
+      res.status(200).json({ accessToken: newAccessToken });
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      return res.status(500).json({ message: 'Could not refresh token' });
     }
-    const payload = jwt.verify(refreshToken, process.env.VERIFY_SECRET_HASH);
-    if (typeof payload !== 'string' && payload && 'user_role' in payload && '_id' in payload) {
-      const userId = payload._id;
-      const user = await userService.getUserByID(userId)
-      if (!user) {
-        return res.status(400).json({ message: 'User does not exist' })
-      }
-      if (user.refreshToken !== refreshToken) {
-        return res.status(400).json({ message: 'Invalid refresh token' })
-      }
-      const newAccessToken = await signToken({ type: 'accessToken', payload: { _id: user.user_id, user_role: user.user_role } });
-      const newRefreshToken = await signToken({ type: 'refreshToken', payload: { _id: user.user_id, user_role: user.user_role } });
-      await userService.updateUserTokens(user, { accessToken: newAccessToken, refreshToken: newRefreshToken });
-      res.cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite: 'none', secure: true })
-      return res.status(200).json({ newAccessToken, newRefreshToken })
-    }
-    return res.status(400).json({ message: 'Invalid token' })
+    return res.status(200).json({ message: 'Token refreshed successfully' });
   }
   // For Googole registration
   async googleLogin(req: Request, res: Response, next: Function) {
     passport.authenticate('google', { scope: ["profile", "email"] })(req, res, next)
   }
+
   async googleCallback(req: Request, res: Response, next: Function) {
     interface GoogleProfile {
       id: string;
