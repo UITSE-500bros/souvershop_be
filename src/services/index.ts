@@ -8,7 +8,7 @@ import reviewService from "./review.service";
 import bannerService from "./banner.service";
 import profileService from "./profile.service";
 import reportService from "./report.service";
-
+import receiptService from "./receipt.service";
 export {
     productService,
     categoryService,
@@ -19,5 +19,6 @@ export {
     reviewService,
     bannerService,
     profileService,
-    reportService
+    reportService,
+    receiptService
 }

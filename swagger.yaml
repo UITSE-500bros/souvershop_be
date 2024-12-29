@@ -1187,6 +1187,44 @@ paths:
           description: Invalid request
         "500":
           description: Invalid request
+  /receipt/cod:
+    post:
+      tags:
+        - Customer
+      summary: Create a cash on delivery transaction
+      description: Create a cash on delivery transaction
+      operationId: createCodTransaction
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: number
+                product_list:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/product_list"
+              required:
+                - amount
+                - product_list
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Invalid request
   /report:
     get:
       tags:

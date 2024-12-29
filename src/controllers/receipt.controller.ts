@@ -3,6 +3,8 @@ import { Request, Response } from 'express'
 import qs from 'qs'
 import crypto from 'crypto'
 import dotenv from 'dotenv'
+import { receiptService } from '../services'
+import { AuthenticatedRequest } from '../middleware/authorizeRole'
 dotenv.config()
 
 function sortObject(obj: { [key: string]: any }): { [key: string]: string } {
@@ -25,16 +27,14 @@ function sortObject(obj: { [key: string]: any }): { [key: string]: string } {
   return sorted;
 }
 class ReceiptController {
-  async createPaymentIntent(req: Request, res: Response) {
-
-  }
   // VNPAY with card
-  async createPaymentUrl(req: Request, res: Response) {
+  async createPaymentUrl(req: AuthenticatedRequest, res: Response) {
+
     const amount: number = req.body.amount;
     if (amount < 5000) {
       return res.status(404).json("The amount must be larger than 5000 vnd")
     }
-
+    console.log(req.customerId);
     process.env.TZ = 'Asia/Ho_Chi_Minh'
     const date = new Date()
     const createDate = moment(date).format('YYYYMMDDHHmmss')
@@ -44,7 +44,7 @@ class ReceiptController {
     const vnpUrl: string = process.env.VNP_URL
     const returnUrl: string = process.env.VNP_RETURN_URL
     const orderId = moment(date).format('DDHHmmss');
-    
+
 
     const bankCode: string = req.body.bankCode
     let locale: string = req.body.language
@@ -65,11 +65,14 @@ class ReceiptController {
         vnp_Amount: amount * 100,
         vnp_ReturnUrl: returnUrl,
         vnp_IpAddr: ipAddr,
-        vnp_CreateDate: createDate
+        vnp_CreateDate: createDate,
       }
+      
+
       if (bankCode) {
         vnp_Params['vnp_BankCode'] = bankCode
       }
+      console.log(vnp_Params);
       const sortedParams = sortObject(vnp_Params)
       const signData = qs.stringify(sortedParams, { encode: false })
       const hmac = crypto.createHmac('sha512', secretKey)
@@ -93,16 +96,50 @@ class ReceiptController {
     const hmac = crypto.createHmac('sha512', process.env.VNP_HASH_SECRET as string);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
-
-
     if (secureHash === signed) {
       console.log(vnp_Params['vnp_OrderInfo']);
-      return res.status(200).json('Payment success');
+      switch (vnp_Params['vnp_ResponseCode']) {
+        case '00':
+          const result = await receiptService.storeReceipt(vnp_Params);
+          return res.status(200).json(result);
+        case '01':
+          return res.status(400).json('Transaction incomplete');
+        case '02':
+          return res.status(400).json('Transaction error');
+        case '04':
+          return res.status(400).json('Reversed transaction: customer charged but transaction failed');
+        case '05':
+          return res.status(202).json('Transaction is being processed by VNPAY (refund)');
+        case '06':
+          return res.status(202).json('Refund request sent to bank by VNPAY');
+        case '07':
+          return res.status(403).json('Transaction suspected of fraud');
+        case '09':
+          return res.status(400).json('Refund transaction rejected');
+        default:
+          return res.status(400).json('Unknown response code');
+      }
     } else {
       return res.status(404).json('Invalid payment');
     }
   }
 
+  async cashonDeilvery(req: AuthenticatedRequest, res: Response) {
+    const { products, amount } = req.body;
+    try {
+      const params = new Object(
+        {
+          vnp_Amount: amount,
+          vnp_CustomerId: req.customerId,
+          vnp_OrderInfo: JSON.stringify(products),
+        }
+      );
+      const result = await receiptService.storeReceipt(params);
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  }
 }
 const receiptController = new ReceiptController()
 export default receiptController;
