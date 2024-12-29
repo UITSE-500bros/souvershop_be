@@ -12,7 +12,7 @@ import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3001;
 
 // Load Swagger Document
 const file = fs.readFileSync('./swagger.yaml', 'utf8');
