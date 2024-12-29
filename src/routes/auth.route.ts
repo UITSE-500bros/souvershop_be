@@ -26,7 +26,4 @@ authRouter.get('/logout', (req: Request, res: Response) => {
 authRouter.post('/forgot-password', AuthController.forgotPassword)
 authRouter.post('/verify-email', AuthController.verifyEmail)
 authRouter.post('/refresh-token', refreshTokenMiddleware, AuthController.refreshToken)
-authRouter.post('/test',authMiddleware, function(req: AuthenticatedRequest, res) {
-  console.log(req.customerId);
-})
 export default authRouter

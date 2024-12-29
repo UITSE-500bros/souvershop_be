@@ -1188,10 +1188,10 @@ paths:
         "500":
           description: Invalid request
 
-  /banner:
+  /banner/{banner_name}:
     get:
       tags:
-        - owner
+        - Banners
       summary: Get all banners
       description: Get all banners
       operationId: getBanners
@@ -1227,17 +1227,8 @@ paths:
                   type: string
                   format: binary # Specifies file upload
                   description: The image file for the banner.
-                banner_file:
-                  type: string
-                  format: binary
-                  description: Additional file for the banner (optional).
-                banner_link:
-                  type: string
-                  format: uri
-                  description: The link associated with the banner.
               required:
                 - banner_image
-                - banner_link
       responses:
         "200":
           description: Banner uploaded successfully.
