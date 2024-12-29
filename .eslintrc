@@ -6,7 +6,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "eslint-config-prettier",
-    "prettier",
+    "prettier"
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
@@ -22,8 +22,8 @@
         "useTabs": false,
         "singleQuote": true,
         "printWidth": 120,
-        "jsxSingleQuote": true,
-      },
-    ],
-  },
+        "jsxSingleQuote": true
+      }
+    ]
+  }
 }
