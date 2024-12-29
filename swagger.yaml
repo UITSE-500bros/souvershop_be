@@ -1187,8 +1187,117 @@ paths:
           description: Invalid request
         "500":
           description: Invalid request
-
-  /banner/{banner_name}:
+  /report:
+    get:
+      tags:
+        - owner
+      summary: Get all reports
+      description: Get all reports
+      operationId: getReports
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/receipt"
+        "400":
+          description: Invalid request
+  /report/{report_id}:
+    get:
+      tags:
+        - owner
+      summary: Get report by id
+      description: Get report by id
+      operationId: getReportById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: report_id
+          in: path
+          description: ID of report to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/receipt"
+        "400":
+          description: Invalid request
+    put:
+      tags:
+        - owner
+      summary: Update report by id
+      description: Update report by id
+      operationId: updateReportById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: report_id
+          in: path
+          description: ID of report to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receipt_date:
+                  type: string
+                  format: date
+                receipt_total:
+                  type: number
+                  format: float
+              required:
+                - receipt_date
+                - receipt_total
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/receipt"
+        "400":
+          description: Invalid request
+    delete:
+      tags:
+        - owner
+      summary: Delete report by id
+      description: Delete report by id
+      operationId: deleteReportById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: report_id
+          in: path
+          description: ID of report to return
+          required: true
+          schema:
+            type: number
+            format: int2
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid request
+  
+  
+  /banner:
     get:
       tags:
         - Banners
@@ -1208,6 +1317,7 @@ paths:
                   $ref: "#/components/schemas/banner"
         "400":
           description: Invalid request
+  /banner/{banner_name}:
     post:
       tags:
         - Banners
