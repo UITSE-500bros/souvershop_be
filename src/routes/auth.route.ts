@@ -1,7 +1,5 @@
-import { Router } from 'express'
-import { AuthController } from '../controllers'
-import { Request, Response } from 'express'
-import authMiddleware, { AuthenticatedRequest } from '../middleware/authorizeRole';
+import { Request, Response, Router } from 'express';
+import { AuthController } from '../controllers';
 import { refreshTokenMiddleware } from '../middleware';
 
 const authRouter = Router()
