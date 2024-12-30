@@ -67,12 +67,12 @@ class ReceiptController {
         vnp_IpAddr: ipAddr,
         vnp_CreateDate: createDate,
       }
-      
+      const expireDate = moment(date).add(15, 'minutes').format('YYYYMMDDHHmmss');
+      vnp_Params['vnp_ExpireDate'] = expireDate;
 
       if (bankCode) {
         vnp_Params['vnp_BankCode'] = bankCode
       }
-      console.log(vnp_Params);
       const sortedParams = sortObject(vnp_Params)
       const signData = qs.stringify(sortedParams, { encode: false })
       const hmac = crypto.createHmac('sha512', secretKey)
@@ -97,9 +97,9 @@ class ReceiptController {
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
     if (secureHash === signed) {
-      console.log(vnp_Params['vnp_OrderInfo']);
       switch (vnp_Params['vnp_ResponseCode']) {
         case '00':
+          console.log(vnp_Params);
           const result = await receiptService.storeReceipt(vnp_Params);
           return res.status(200).json(result);
         case '01':

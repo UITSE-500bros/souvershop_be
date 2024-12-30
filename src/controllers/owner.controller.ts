@@ -7,10 +7,10 @@ import { User } from '../models';
 class OwnerController {
     async createEmployeeAccount(req: Request, res: Response) {
         try {
-            const { user_name, user_password, user_email } = req.body;
+            const { user_name, user_password, user_email, user_phoneNumber, salary } = req.body;
             const file = req.file;
 
-            if (!user_name || !user_password || !user_email) {
+            if (!user_name || !user_password || !user_email || !user_phoneNumber || !salary) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
@@ -32,7 +32,9 @@ class OwnerController {
                         user_email,
                         created_at: new Date(),
                         updated_at: new Date(),
-                        user_avatar: file ? file.path : null
+                        user_avatar: file ? file.path : null,
+                        user_phone_number: user_phoneNumber,
+                        staff_salary: salary
                     }
                 );
                 
@@ -56,6 +58,10 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
+            if (!userService.getUserByEmail(email)){
+                return res.status(404).json({ message: 'Employee account not found' });
+            }
+            
             // Update employee account
             return res.status(200).json({ message: 'Employee account updated successfully' });
         } catch (error) {
@@ -69,7 +75,14 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
+            
+            if (!userService.getUserByEmail(user_email)){
+                return res.status(404).json({ message: 'Employee account not found' });
+            }
             // Delete employee account
+
+
+
             return res.status(200).json({ message: 'Employee account deleted successfully' });
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });

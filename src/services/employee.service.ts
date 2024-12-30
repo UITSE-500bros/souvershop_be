@@ -1,21 +1,14 @@
 import { User } from "../models";
-import { pool } from "../utils/pool";
+import { supabase } from "../utils";
 
 class EmployeeService {
     async getEmployee() {
-        const result = await pool.query('SELECT * FROM user WHERE user_role = 13');
-        return result.rows;
-    }
-    async getEmployeeById(employee_id: string) {
-        const result = await pool.query('SELECT * FROM user WHERE user_id = $1 AND role = 2', [employee_id]);
-        if (result.rows.length === 0) {
-            throw new Error('Employee not found');
-        }
-        return result.rows[0];
-    }
-    async createEmployee() {
 
     }
+    async getEmployeeById(employee_id: string) {
+
+    }
+
     async updateEmployeeSalary(employee_id: string, salary: number) {
 
     }
@@ -23,11 +16,20 @@ class EmployeeService {
 
     }
     async updateEmployeeInformation(employee: User) {
-        
+
 
     }
     async deleteEmployee(employee_id: string) {
-
+        const response = await Promise.all([
+            supabase.from('grns')
+                .delete()
+                .eq('user_id', employee_id),
+            supabase.from('users')
+                .delete()
+                .eq('user_id', employee_id)
+        ]);
+        
+        return response;
     }
 }
 const employeeService = new EmployeeService();
