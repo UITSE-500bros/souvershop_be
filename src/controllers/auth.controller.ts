@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken'
 import passport from 'passport'
 import { RefreshtokenRequest } from '../type'
 config()
-const bcrypt = require('bcrypt')
+import bcrypt from 'bcrypt'
 const saltRounds = 10
 class AuthController {
   // For normal registration at Customer side 
