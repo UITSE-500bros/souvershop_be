@@ -9,7 +9,7 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
   - url: "https://souvershop-ff3c13f9139a.herokuapp.com/api/"
-  - url: "http://localhost:8000/api/"
+  - url: "http://localhost:3001/api/"
 tags:
   - name: auth
     description: Auth APIs
@@ -947,6 +947,77 @@ paths:
                   $ref: "#/components/schemas/user"
         "400":
           description: Invalid request
+  /admin/create_employee:
+    post:
+      summary: Create a new employee account
+      description: This route creates a new employee account. The required fields are sent through form-data, and the file attribute is used for uploading an avatar.
+      tags:
+        - Employees
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  description: The name of the user
+                  example: JohnDoe
+                user_password:
+                  type: string
+                  description: The password for the user
+                  example: password123
+                user_email:
+                  type: string
+                  format: email
+                  description: The email address of the user
+                  example: johndoe@example.com
+                file:
+                  type: string
+                  format: binary
+                  description: The avatar file for the user
+      responses:
+        '201':
+          description: Employee account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Employee account created successfully
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Missing required fields
+        '409':
+          description: Employee account already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Employee account already exists
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
   /admin/employees/{employee_id}:
     put:
       tags:

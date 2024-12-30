@@ -1,7 +1,7 @@
 import { supabase } from '../utils';
 import User from '../models/user.model';
 
-interface UpdateFields {
+export interface UpdateFields {
   user_name?: string;
   user_address?: string;
   user_phone_number?: string;

@@ -6,5 +6,4 @@ export {
     mailTemplate,
     expirationJWT,
     secretKeyJWT,
-    
 };

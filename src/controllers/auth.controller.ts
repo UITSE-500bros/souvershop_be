@@ -30,7 +30,7 @@ class AuthController {
       updated_at: new Date()
     })
     try {
-      const response = await userService.createUser(customer)
+      const response = await userService.createUser(customer , 'customer')
       if (!response) {
         return res.status(400).json({ message: 'Error creating user' })
       }
@@ -198,7 +198,8 @@ class AuthController {
               created_at: new Date(),
               updated_at: new Date(),
               googleId: userData.googleId
-            })
+            }),
+            'customer'
           )
           // Attach user to session
           req.logIn(user, async (err: Error) => {

@@ -2,7 +2,7 @@ import { User } from "../models";
 import { supabase } from "../utils";
 
 class UserService {
-    async createUser(user: User){
+    async createUser(user: User , role : string){
         const { data, error } = await supabase
             .from('user')
             .insert({
@@ -17,7 +17,7 @@ class UserService {
             console.log(error);
             return null;
         }
-        const res = await this.signUserRole(newUser, 'customer');
+        const res = await this.signUserRole(newUser, role);
         if (!res) {
             return null;
         }
