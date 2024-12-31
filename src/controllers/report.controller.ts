@@ -28,6 +28,36 @@ class ReportController {
       return res.status(500).json({ error: 'Failed to generate report' });
     }
   }
+
+  async productsReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getProductsReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  async revenueReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getRevenueReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  async lowStockReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getLowInventoryReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
 }
 
 const reportController = new ReportController();

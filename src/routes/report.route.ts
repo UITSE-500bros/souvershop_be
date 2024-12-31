@@ -17,5 +17,9 @@ router.get('/', reportController.getReport);
 // receipt_quantity: số lượng hóa đơn
 
 // không có số lượng hàng đã bán vì không có product_list trong bảng receipt
+router.get('/products', reportController.productsReport);
+// router.get('/purchases', reportController.purchasesReport);
+router.get('/revenue', reportController.revenueReport);
+router.get("/low-stock", reportController.lowStockReport);
 
 export default router;

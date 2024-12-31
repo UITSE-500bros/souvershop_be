@@ -101,6 +101,79 @@ class ReportService {
       throw new Error('Failed to generate report for the given date range');
     }
   }
+
+  async getProductsReport() {
+    const productsReportQuery = `
+      SELECT 
+        (SELECT COUNT(*) FROM product) AS product_count,
+        (SELECT COUNT(*) FROM category) AS category_count;
+      `;
+    const productsReportResult = await pool.query(productsReportQuery);
+    return productsReportResult.rows[0];
+  }
+  // Doanh số
+  async getRevenueReport() {
+    const salesReportQuery = `
+      SELECT
+          SUM(total_quantity) AS grand_total_quantity
+      FROM (
+          SELECT
+              receipt_id,
+              SUM((json_element->>'quantity')::INTEGER) AS total_quantity
+          FROM (
+              SELECT 
+                  receipt_id,
+                  unnest(product_list) AS json_element
+              FROM receipt
+          ) subquery
+          GROUP BY receipt_id
+      ) final_subquery;
+    `;
+    // const costReportQuery = `
+    //   SELECT 
+    //       SUM(u.salary) AS total_salary
+    //   FROM 
+    //       public.user u
+    //   JOIN 
+    //       public.role_user ru ON u.user_id = ru.user_id
+    //   WHERE 
+    //       ru.role_id = 1;
+    // `;
+
+    const revenueReportQuery = salesReportQuery;
+    const revenueReportResult = await pool.query(revenueReportQuery);
+    return revenueReportResult;
+
+  }
+  // Mua hàng
+  async getPurchasesReport() {
+    const purchasesReportQuery = `
+      SELECT 
+        (SELECT SUM(total) FROM grn) AS total_expense,
+        (SELECT COUNT(*) FROM grn) AS total_purchase;
+      `;
+    const purchasesReportResult = await pool.query(purchasesReportQuery);
+    return purchasesReportResult.rows[0];
+  }
+
+  // SL tồn kho thấp
+  async getLowInventoryReport() {
+    const feature_products = ['id', 'name', 'image', 'quantity'].map((item) => {
+      return `product_${item}`;
+    });
+
+    const lowInventoryReportQuery = ` 
+        SELECT ${feature_products.join(',')} FROM product 
+        WHERE product_quantity <= 12
+        ORDER BY product_quantity ASC;
+    `;
+    console.log(lowInventoryReportQuery)
+    const lowInventoryReportResult = await pool.query(lowInventoryReportQuery);
+    if (lowInventoryReportResult.rows.length === 0) {
+      return { low_inventory_count: 0 };
+    }
+    return lowInventoryReportResult.rows;
+  }
 }
 
 const reportService = new ReportService();
