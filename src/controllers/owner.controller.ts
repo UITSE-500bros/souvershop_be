@@ -95,8 +95,14 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
+            if (!userService.getUserByEmail(user_email)){
+                return res.status(404).json({ message: 'Employee account not found' });
+            }
             // Get employee account detail
-            return res.status(200).json({ message: 'Employee account detail' });
+
+            const employee = await userService.getUserByEmail(user_email);
+            
+            return res.status(200).json(employee);
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
         }
@@ -104,7 +110,8 @@ class OwnerController {
     async getEmployeeList(req: Request, res: Response) {
         try {
             // Get all employee accounts
-            return res.status(200).json({ message: 'Employee account list' });
+            const employees = await userService.getUsersByRole('Nhân viên');
+            return res.status(200).json(employees);
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
         }
@@ -124,8 +131,8 @@ class OwnerController {
     }
     async getCustomerList(req: Request, res: Response) {
         try {
-            // Get all customer accounts
-            return res.status(200).json({ message: 'Customer account list' });
+            const customers = await userService.getUsersByRole('Khách hàng');
+            return res.status(200).json(customers);
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
         }
@@ -137,8 +144,13 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if customer account exists
+            if (!userService.getUserByEmail(user_email)){
+                return res.status(404).json({ message: 'Customer account not found' });
+            }
+            const customer = await userService.getUserByEmail(user_email);
+
             // Get customer account detail
-            return res.status(200).json({ message: 'Customer account detail' });
+            return res.status(200).json(customer);
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
         }

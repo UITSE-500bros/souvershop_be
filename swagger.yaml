@@ -9,7 +9,7 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
   - url: "https://souvershop-ff3c13f9139a.herokuapp.com/api/"
-  - url: "http://localhost:3001/api/"
+  - url: "http://localhost:8888/api/"
 tags:
   - name: auth
     description: Auth APIs
