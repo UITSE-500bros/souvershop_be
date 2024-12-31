@@ -15,7 +15,7 @@ tags:
     description: Auth APIs
   - name: product
     description: Product APIs
-  - name: customer
+  - name: Customer
     description: Customer APIs
   - name: employee
     description: Employee APIs
@@ -1461,6 +1461,69 @@ paths:
           description: Unauthorized. Access token is missing or invalid.
         "500":
           description: Internal server error. Something went wrong on the server.
+  /product/inventory:
+    get:
+      summary: Retrieve a paginated list of product inventory
+      description: Fetch a list of products from the inventory with pagination support.
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: The number of items per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successfully retrieved product inventory.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_items:
+                    type: integer
+                    description: Total number of products in the inventory.
+                  total_pages:
+                    type: integer
+                    description: Total number of pages available.
+                  current_page:
+                    type: integer
+                    description: Current page number.
+                  page_size:
+                    type: integer
+                    description: Number of items per page.
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Unique identifier for the product.
+                        name:
+                          type: string
+                          description: Name of the product.
+                        quantity:
+                          type: integer
+                          description: Quantity of the product in stock.
+                        price:
+                          type: number
+                          format: float
+                          description: Price of the product.
+        '400':
+          description: Bad request due to invalid query parameters.
+        '500':
+          description: Internal server error.
+
+
 components:
   schemas:
     banner:

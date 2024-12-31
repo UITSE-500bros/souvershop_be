@@ -86,7 +86,8 @@ export class ProductController {
 
   async getAllInventories(req: Request, res: Response): Promise<Response> {
     try {
-      const inventories = await ProductService.getAllInventories();
+      const { page, page_size } = req.query;
+      const inventories = await ProductService.getAllInventories(Number(page), Number(page_size));
       return res.status(200).json(inventories);
     } catch (err) {
       return res.status(500).json({ error: 'Failed to retrieve inventories' });

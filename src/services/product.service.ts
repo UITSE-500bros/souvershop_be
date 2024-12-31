@@ -128,15 +128,18 @@ class ProductService {
         return result.rows[0];
     }
 
-    async getAllInventories() {
+    async getAllInventories(page: number, page_size: number) {
         const result = await pool.query(
-            `SELECT 
-                product_id, 
-                product_name,
-                product_quantity,
-                (product_image->0) as main_img 
-            FROM product`
+            `
+            SELECT *
+            FROM product
+            ORDER BY create_at DESC
+            LIMIT ${page_size}
+            OFFSET (${page} - 1) * ${page_size};
+
+            `
         );
+        console.log(result.rows);
         return result.rows;
     }
     
