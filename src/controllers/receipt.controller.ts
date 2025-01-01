@@ -34,7 +34,6 @@ class ReceiptController {
     if (amount < 5000) {
       return res.status(404).json("The amount must be larger than 5000 vnd")
     }
-    console.log(req.customerId);
     process.env.TZ = 'Asia/Ho_Chi_Minh'
     const date = new Date()
     const createDate = moment(date).format('YYYYMMDDHHmmss')
