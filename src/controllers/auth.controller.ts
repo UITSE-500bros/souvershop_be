@@ -88,8 +88,6 @@ class AuthController {
       secure: true      // Ensures cookie is sent only over HTTPS
     });
 
-    console.log(res.cookie)
-
     // Only send the access token in the JSON response
     return res.status(200).json({ accessToken });
 

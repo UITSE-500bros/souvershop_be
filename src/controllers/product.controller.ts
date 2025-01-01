@@ -113,6 +113,23 @@ export class ProductController {
       return res.status(500).json({ error: 'Failed to retrieve products' });
     }
   }
+  async searchProductByName(req: Request, res: Response): Promise<Response> {
+    const { product_name } = req.params;
+    try {
+      const products = await ProductService.searchProductByName(product_name);
+      return res.status(200).json(products);
+    } catch (err) {
+      return res.status(500).json({ error: 'Failed to retrieve products' });
+    }
+  }
+  async getRandomProduct(req: Request, res: Response): Promise<Response> {
+    try {
+      const product = await ProductService.getRandomProduct();
+      return res.status(200).json(product);
+    } catch (err) {
+      return res.status(500).json({ error: 'Failed to retrieve product' });
+    }
+  }
 }
 
 const productController = new ProductController();

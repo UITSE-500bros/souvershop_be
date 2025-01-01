@@ -182,6 +182,22 @@ class ProductService {
         return result;
     }
 
+    async searchProductByName(product_name: string) {
+        const result = await pool.query(
+            `SELECT * FROM product WHERE product_name ILIKE $1`,
+            [`%${product_name}%`]
+        );
+        return result.rows;
+    }
+    async getRandomProduct() {
+        const result = await pool.query(
+            'SELECT * FROM product ORDER BY RANDOM() LIMIT 5'
+        );
+
+        console.log(result.rows);
+        return result.rows;
+    }
+
 }
 
 const productService = new ProductService;

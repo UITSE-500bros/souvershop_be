@@ -10,5 +10,7 @@ router.get('/',authMiddleware, productController.getAllProducts);
 router.post('/', productController.createProduct);
 router.put('/:product_id', productController.updateProduct);
 router.delete('/:product_id', productController.deleteProduct);
+router.get('/search/:product_name', productController.searchProductByName);
+router.get('/random',authMiddleware, productController.getRandomProduct);
 
 export default router;
