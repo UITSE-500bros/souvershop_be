@@ -122,7 +122,7 @@ export class ProductController {
       return res.status(500).json({ error: 'Failed to retrieve products' });
     }
   }
-  async getRandomProduct(req: Request, res: Response): Promise<Response> {
+  async getRandomProduct(req: AuthenticatedRequest, res: Response) {
     try {
       const product = await ProductService.getRandomProduct();
       return res.status(200).json(product);

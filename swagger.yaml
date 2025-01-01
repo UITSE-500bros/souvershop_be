@@ -1404,7 +1404,7 @@ paths:
           description: successful operation
         "400":
           description: Invalid request
-  /product/random:
+  /product/search_random:
     get:
       tags:
         - product

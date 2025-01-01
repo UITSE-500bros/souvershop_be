@@ -197,7 +197,6 @@ class ProductService {
         console.log(result.rows);
         return result.rows;
     }
-
 }
 
 const productService = new ProductService;
