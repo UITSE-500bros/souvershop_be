@@ -235,7 +235,7 @@ class AuthController {
             secure: true
           });
 
-          return res.status(200).json({ accessToken });
+          res.redirect(`http://localhost:5173/verify-email/${accessToken}`)
         }
       } catch (error) {
         console.error('Database error:', error)
