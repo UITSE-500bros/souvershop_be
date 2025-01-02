@@ -41,9 +41,10 @@ class ReceiptController {
     const tmnCode: string = process.env.VNP_TMN_CODE
     const secretKey: string = process.env.VNP_HASH_SECRET
     const vnpUrl: string = process.env.VNP_URL
-    const returnUrl: string = process.env.VNP_RETURN_URL
-    const orderId = moment(date).format('DDHHmmss');
+    const returnUrl: string = process.env.VNP_RETURN_URL;
+    const customerId: string = req.customerId;
 
+    const orderId = await receiptService.generateOrderId(customerId, amount, req.body.products);
 
     const bankCode: string = req.body.bankCode
     let locale: string = req.body.language
@@ -59,7 +60,7 @@ class ReceiptController {
         vnp_Locale: locale,
         vnp_CurrCode: currCode,
         vnp_TxnRef: orderId,
-        vnp_OrderInfo: `Thanh toan cho ma GD:${orderId}, ${JSON.stringify(req.body.products)}`,
+        vnp_OrderInfo: `Thanh toan cho ma GD:${orderId}`,
         vnp_OrderType: 'other',
         vnp_Amount: amount * 100,
         vnp_ReturnUrl: returnUrl,
@@ -96,11 +97,11 @@ class ReceiptController {
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
     if (secureHash === signed) {
+      const orderId = vnp_Params['vnp_TxnRef'];
+      await receiptService.updateOrder(orderId as string, vnp_Params['vnp_ResponseCode'] as string);
       switch (vnp_Params['vnp_ResponseCode']) {
         case '00':
-          console.log(vnp_Params);
-          const result = await receiptService.storeReceipt(vnp_Params);
-          return res.status(200).json(result);
+          return res.status(200).json('Transaction successful');
         case '01':
           return res.status(400).json('Transaction incomplete');
         case '02':
@@ -126,19 +127,13 @@ class ReceiptController {
   async cashonDeilvery(req: AuthenticatedRequest, res: Response) {
     const { products, amount } = req.body;
     try {
-      const params = new Object(
-        {
-          vnp_Amount: amount,
-          vnp_CustomerId: req.customerId,
-          vnp_OrderInfo: JSON.stringify(products),
-        }
-      );
-      const result = await receiptService.storeReceipt(params);
-      return res.status(200).json(result);
+      const orderId = await receiptService.generateOrderId(req.customerId, amount, products);
+      return res.status(200).json(`Order ${orderId} created successfully`);
     } catch (error) {
       return res.status(500).json(error);
     }
   }
+  
 }
 const receiptController = new ReceiptController()
 export default receiptController;

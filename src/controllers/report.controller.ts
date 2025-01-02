@@ -58,6 +58,19 @@ class ReportController {
       return res.status(500).json({ error: 'Failed to generate report' });
     }
   }
+  //summary stock
+
+  //summary buy 
+
+  //summary sell & buy ( bar chart )
+
+  //summary orders
+
+  //best product's sell
+
+  // line chart
+
+
 }
 
 const reportController = new ReportController();
