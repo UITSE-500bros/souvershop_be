@@ -206,6 +206,87 @@ class CustomerService {
         }
       }
     
+      async getAllFavourites(user_id: string) {
+        const userResult = await pool.query('SELECT favourite_list FROM "user" WHERE user_id = $1', [user_id]);
+        if (userResult.rows.length === 0) {
+          throw new Error('User not found');
+        }
+    
+        const favouriteList: string[] = userResult.rows[0].favourite_list || [];
+    
+        if (favouriteList.length === 0) {
+          return [];
+        }
+    
+        const productsResult = await pool.query(
+          `SELECT product_id, product_name, product_image, product_selling_price, is_sale
+           FROM product
+           WHERE product_id = ANY($1)`,
+          [favouriteList]
+        );
+    
+        return productsResult.rows;
+      }
+    
+      async addToFavourites(user_id: string, product_id: string) {
+        const productCheck = await pool.query('SELECT 1 FROM product WHERE product_id = $1', [product_id]);
+        if (productCheck.rows.length === 0) {
+          throw new Error('Product not found');
+        }
+      
+        const userResult = await pool.query(
+          'SELECT favourite_list FROM "user" WHERE user_id = $1',
+          [user_id]
+        );
+        if (userResult.rows.length === 0) {
+          throw new Error('User not found');
+        }
+      
+        let favouriteList: string[] = userResult.rows[0].favourite_list || [];
+      
+        if (!favouriteList.includes(product_id)) {
+          favouriteList.push(product_id);
+          console.log(favouriteList);
+      
+          await pool.query(
+            `UPDATE "user"
+             SET favourite_list = array_append(favourite_list, $1::json)
+             WHERE user_id = $2`,
+            [JSON.stringify(product_id), user_id]
+          );
+        }
+      }
+    
+      async removeFromFavourites(user_id: string, product_id: string) {
+        console.log("User ID:", user_id);
+        console.log("Product ID to remove:", product_id);
+      
+        const userResult = await pool.query(
+          'SELECT favourite_list FROM "user" WHERE user_id = $1',
+          [user_id]
+        );
+      
+        console.log("Initial favourite_list:", userResult.rows[0].favourite_list);
+      
+        if (userResult.rows.length === 0) {
+          throw new Error('User not found');
+        }
+      
+        let favouriteList: string[] = userResult.rows[0].favourite_list || [];
+        favouriteList = favouriteList.filter((id) => id !== product_id);
+        console.log("Filtered favouriteList (before converting to JSON):", favouriteList);
+      
+        const jsonArray = favouriteList.map((id) => `"${id}"`);
+        console.log("JSON Array:", jsonArray);
+      
+        const updateResult = await pool.query(
+          `UPDATE "user" SET favourite_list = $1 WHERE user_id = $2`,
+          [jsonArray, user_id]
+        );
+      
+        console.log("Update Result:", updateResult); // Kiểm tra updateResult có thay đổi gì không, ví dụ: rowCount
+      
+      }
 }
 
 const customerService = new CustomerService();

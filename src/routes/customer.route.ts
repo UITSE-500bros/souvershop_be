@@ -9,4 +9,8 @@ router.post('/cart', authMiddleware, customerController.addToCart);
 router.put('/cart', authMiddleware, customerController.editCartItem);
 router.delete('/cart', authMiddleware, customerController.removeFromCart);
 
+router.get('/favourite', authMiddleware, customerController.getAllFavourites);
+router.post('/favourite', authMiddleware, customerController.addToFavourites);
+router.put('/favourite', authMiddleware, customerController.removeFromFavourites);
+
 export default router;

@@ -76,6 +76,39 @@ class CustomerController {
           return res.status(500).json({ error: err.message });
         }
       }
+
+      async getAllFavourites(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        const user_id = req.customerId;
+        try {
+          const favouriteProducts =
+            await customerService.getAllFavourites(user_id);
+          return res.status(200).json(favouriteProducts);
+        } catch (err: any) {
+          return res.status(500).json({ error: err.message });
+        }
+      }
+    
+      async addToFavourites(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        const user_id = req.customerId;
+        const { product_id } = req.body;
+        try {
+          await customerService.addToFavourites(user_id, product_id);
+          return res.status(200).json({ message: 'Product added to favourites' });
+        } catch (err: any) {
+          return res.status(500).json({ error: err.message });
+        }
+      }
+    
+      async removeFromFavourites(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        const user_id = req.customerId;
+        const { product_id } = req.body;
+        try {
+          await customerService.removeFromFavourites(user_id, product_id);
+          return res.status(200).json({ message: 'Product removed from favourites' });
+        } catch (err: any) {
+          return res.status(500).json({ error: err.message });
+        }
+      }
 }
 
 const customerController = new CustomerController();
