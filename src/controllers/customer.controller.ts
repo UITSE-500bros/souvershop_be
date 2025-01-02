@@ -57,7 +57,8 @@ class CustomerController {
     
       async editCartItem(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const customerId = req.customerId;
-        const { product_id, quantity } = req.body;
+        const { product_id } = req.params;
+        const { quantity } = req.body;
         try {
           await customerService.editCartItem(customerId, product_id, quantity);
           return res.status(200).json({ message: 'Cart item updated successfully' });
