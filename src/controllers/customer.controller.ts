@@ -68,7 +68,7 @@ class CustomerController {
     
       async removeFromCart(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const customerId = req.customerId;
-        const { product_id } = req.body;
+        const { product_id } = req.params;
         try {
           await customerService.removeFromCart(customerId, product_id);
           return res.status(200).json({ message: 'Product removed from cart successfully' });
