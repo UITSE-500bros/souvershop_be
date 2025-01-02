@@ -9,6 +9,8 @@ import bannerService from "./banner.service";
 import profileService from "./profile.service";
 import reportService from "./report.service";
 import receiptService from "./receipt.service";
+import customerService from "./customer.service";
+
 export {
     productService,
     categoryService,
@@ -20,5 +22,6 @@ export {
     bannerService,
     profileService,
     reportService,
-    receiptService
+    receiptService,
+    customerService
 }

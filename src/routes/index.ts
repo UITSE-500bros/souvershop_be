@@ -9,6 +9,7 @@ import adminRouter from './admin.route'
 import bannerRouter from './banner.route'
 import profileRouter from './profile.route'
 import reportRouter from './report.route'
+import customerRouter from './customer.route'
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/admin',adminRouter);
 router.use('/banner', bannerRouter);
 router.use('/profile', profileRouter);
 router.use('/report', reportRouter);
+router.use('/customer', customerRouter);
 
 export default router;
