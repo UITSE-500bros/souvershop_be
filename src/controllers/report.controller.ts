@@ -58,6 +58,74 @@ class ReportController {
       return res.status(500).json({ error: 'Failed to generate report' });
     }
   }
+  //summary stock
+
+  async stockReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getStockReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+  //summary buy 
+
+  async buyReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getBuyReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  //summary sell & buy ( bar chart )
+  async sellBuyReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getSellBuyReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  //summary orders
+  async ordersReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getOrdersReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  //best product's sell
+  async bestProductReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getBestProductReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  // line chart
+  async lineChartReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getLineChartReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+
 }
 
 const reportController = new ReportController();

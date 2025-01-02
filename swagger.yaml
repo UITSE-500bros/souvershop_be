@@ -9,7 +9,7 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
   - url: "https://souvershop-ff3c13f9139a.herokuapp.com/api/"
-  - url: "http://localhost:3001/api/"
+  - url: "http://localhost:8888/api/"
 tags:
   - name: auth
     description: Auth APIs
@@ -1151,49 +1151,16 @@ paths:
           description: successful operation
         "400":
           description: Invalid request
+  
   /receipt/create_payment_url:
     post:
       tags:
-        - Customer
-      summary: Create a transaction
-      description: Create a transaction
-      operationId: createTransaction
+        - order
+      description: Create payment url
       security:
         - BearerAuth: []
       requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                amount:
-                  type: number
-                  format: number
-              required:
-                - amount
         required: true
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: string
-                format: string
-        "400":
-          description: Invalid request
-        "500":
-          description: Invalid request
-  /receipt/verify_payment:
-    post:
-      tags:
-        - Customer
-      summary: Verify a transaction
-      description: Verify a transaction
-      operationId: verifyTransaction
-      security:
-        - BearerAuth: []
-      requestBody:
         content:
           application/json:
             schema:
@@ -1201,26 +1168,70 @@ paths:
               properties:
                 amount:
                   type: number
-                  format: number
-                payment_id:
+                  format: float
+                  description: Total amount to be paid in the smallest currency unit (e.g., cents for USD).
+                  example: 15000
+                currency:
                   type: string
-                  format: string
-              required:
-                - amount
-                - payment_id
-        required: true
+                  description: ISO 4217 currency code (e.g., USD, EUR).
+                  example: "VND"
+                products:
+                  type: array
+                  description: List of products in the payment request.
+                  items:
+                    type: object
+                    properties:
+                      product_id:
+                        type: string
+                        description: Unique identifier of the product.
+                        example: "12345"
+                      quantity:
+                        type: integer
+                        description: Quantity of the product.
+                        example: 2
+                      total:
+                        type: number
+                        format: float
+                        description: Total price for this product in the smallest currency unit.
+                        example: 10000
       responses:
         "200":
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
-                type: string
-                format: string
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: The payment url.
+                    example: "https://payment-url.com"
         "400":
-          description: Invalid request
-        "500":
-          description: Invalid request
+          description: Invalid input or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Type of error.
+                        example: "invalid_request_error"
+                      message:
+                        type: string
+                        description: Details of the error.
+                        example: "Missing required param: amount."
+                      param:
+                        type: string
+                        description: The parameter that caused the error.
+                        example: "amount"
+                      doc_url:
+                        type: string
+                        description: URL to Stripe's documentation for the error.
+                        example: "https://stripe.com/docs/error-codes/parameter-missing"
   /receipt/payment-return:
     post:
       tags:
@@ -1404,7 +1415,24 @@ paths:
           description: successful operation
         "400":
           description: Invalid request
-  
+  /product/search_random:
+    get:
+      tags:
+        - product
+      summary: Get random products
+      description: Get random products
+      operationId: getRandomProducts
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/product"
+        "400":
+          description: Invalid request
   
   /banner:
     get:
@@ -1522,7 +1550,6 @@ paths:
           description: Bad request due to invalid query parameters.
         '500':
           description: Internal server error.
-
 
 components:
   schemas:
@@ -1769,6 +1796,9 @@ components:
         product_quantity:
           type: number
           format: integer
+        product_total:
+          type: number
+          format: float
 
     # Enums
     user_account_status:
