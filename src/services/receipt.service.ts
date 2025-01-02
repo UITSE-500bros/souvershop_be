@@ -1,47 +1,85 @@
-import { ProductList } from "../models";
 import { supabase } from "../utils";
+
 class ReceiptService {
+    async generateOrderId(customerId, amount, products) {
+        const { data, error } = await supabase
+            .from("order")
+            .insert({ customer_id: customerId, total: amount, product_list: products })
+            .select()
+            .single();
 
-    async storeReceipt(response: any) {
-        // Extract orderId and products using regex and JSON.parse
-        const orderInfoParts = response.vnp_OrderInfo.split(', ');
+        if (error) throw error;
 
-        const products: ProductList[] = JSON.parse(orderInfoParts[1]);
-        console.log(products);
-        const result = await Promise.all([
-            supabase.from('receipt').insert({
-                total: response.vnp_Amount,
-                product_list: products,
-            }).single(),
-        
-            // Update the product quantity in the database
-            await Promise.all(products.map(async (product) => {
+        await Promise.all(
+            products.map(async ({ product_id, quantity }) => {
                 try {
-                    console.log(product);
-                    const product_quantity = await supabase.from('product').select('product_quantity').eq('product_id', product.product_id).single();
-                    
-                    const { data, error } = await supabase
-                        .from('product')
-                        .update({ product_quantity:   product_quantity.data.product_quantity - product.quantity })
-                        .eq('product_id', product.product_id)
+                    const { data: productData, error: selectError } = await supabase
+                        .from("product")
+                        .select("product_quantity")
+                        .eq("product_id", product_id)
                         .single();
-                        
-                    if (error) {
-                        throw new Error(error.message);
-                    }
-                    return data;
+
+                    if (selectError) throw selectError;
+
+                    const { error: updateError } = await supabase
+                        .from("product")
+                        .update({ product_quantity: productData.product_quantity - quantity })
+                        .eq("product_id", product_id);
+
+                    if (updateError) throw updateError;
                 } catch (err) {
-                    // Handle the error, e.g., log it or return null to avoid breaking Promise.all
-                    console.error('Error updating product:', err);
-                    return null;  // or return { success: false } to indicate failure
+                    console.error("Error updating product:", err);
                 }
-            })),
-        ]);
-        
-        return result;
-        
+            })
+        );
+
+        return data.receipt_id;
     }
 
+    async updateOrder(orderId, responseCode) {
+        const status = responseCode === "00" ? "Transaction successful" : "Transaction error";
+
+        if (responseCode !== "00") {
+            const { data: orderData, error: orderError } = await supabase
+                .from("order")
+                .select("product_list")
+                .eq("receipt_id", orderId)
+                .single();
+
+            if (orderError) throw orderError;
+
+            await Promise.all(
+                orderData.product_list.map(async ({ product_id, quantity }) => {
+                    try {
+                        const { data: productData, error: selectError } = await supabase
+                            .from("product")
+                            .select("product_quantity")
+                            .eq("product_id", product_id)
+                            .single();
+
+                        if (selectError) throw selectError;
+
+                        const { error: updateError } = await supabase
+                            .from("product")
+                            .update({ product_quantity: productData.product_quantity - quantity })
+                            .eq("product_id", product_id);
+
+                        if (updateError) throw updateError;
+                    } catch (err) {
+                        console.error("Error updating product:", err);
+                    }
+                })
+            );
+        }
+
+        const { data, error } = await supabase
+            .from("order")
+            .update({ transaction_status: status })
+            .eq("receipt_id", orderId);
+
+        if (error) throw error;
+        return data;
+    }
 }
-const receiptService = new ReceiptService();
-export default receiptService;
+
+export default new ReceiptService();

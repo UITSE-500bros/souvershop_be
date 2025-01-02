@@ -1,6 +1,7 @@
 import { pool } from "../utils";
 import { ProductList } from "../models";
 
+
 class CustomerService {
     async getCustomer() {
         const result = await pool.query('SELECT * FROM user WHERE role = 1');

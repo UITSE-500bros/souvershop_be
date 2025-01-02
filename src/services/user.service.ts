@@ -1,5 +1,5 @@
 import { User } from "../models";
-import { supabase } from "../utils";
+import { pool, supabase } from "../utils";
 
 class UserService {
     async createUser(user: User , role : string){
@@ -74,6 +74,35 @@ class UserService {
         }
         return user;
 
+    }
+
+    async getUsersByRole(role: string) {
+        const userQuery = `
+            SELECT
+                *
+                FROM
+                "user"
+                WHERE
+                user_id IN (
+                    SELECT
+                    user_id
+                    FROM
+                    role_user
+                    WHERE
+                    role_id IN (
+                        SELECT
+                        role_id
+                        FROM
+                        role
+                        WHERE
+                        role_name = '${role}'
+                    )
+            );
+        `;
+
+        const response = await pool.query(userQuery);
+        
+        return response.rows;
     }
 
     async updateUserTokens(user: User, tokens: { accessToken?: string; refreshToken?: string, resetPasToken?: string; verifyToken?: string; }) {

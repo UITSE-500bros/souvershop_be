@@ -174,6 +174,96 @@ class ReportService {
     }
     return lowInventoryReportResult.rows;
   }
+
+  async getStockReport() {
+    const stockReportQuery = `
+      SELECT 
+        (SELECT COUNT(*) FROM product) AS product_count,
+        (SELECT SUM(quantity) FROM product) AS total_quantity;
+    `;
+    const stockReportResult = await pool.query(stockReportQuery);
+    return stockReportResult;
+
+  }
+  async getBuyReport() {
+    const buyReportQuery = `
+      SELECT 
+        (SELECT COUNT(*) FROM grn) AS total_purchase,
+        (SELECT SUM(total) FROM grn) AS total_expense;
+    `;
+    const buyReportResult = await pool.query(buyReportQuery);
+    return buyReportResult;
+
+  }
+  async getSellBuyReport() {
+
+
+  }
+  async getOrdersReport() {
+    
+
+  }
+  async getBestProductReport() {
+    const bestProductReportQuery = `
+      WITH product_sales AS (
+        SELECT
+            p.product_id,
+            p.product_name,
+            p.product_selling_price,
+            SUM(o.total) AS total_revenue,
+            COUNT(o.receipt_id) AS times_sold,
+            p.percentage_sale
+        FROM
+            public.product p
+        LEFT JOIN
+            LATERAL (
+                SELECT
+                    receipt_id,
+                    total,
+                    UNNEST(product_list)::jsonb ->> 'product_id' AS product_id_in_order
+                FROM
+                    public.order
+            ) o ON o.product_id_in_order::uuid = p.product_id
+        GROUP BY
+            p.product_id, p.product_name, p.product_selling_price, p.percentage_sale
+      ),
+      ranked_products AS (
+          SELECT
+              product_id,
+              product_name,
+              product_selling_price,
+              total_revenue,
+              times_sold,
+              percentage_sale,
+              RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank,
+              RANK() OVER (ORDER BY times_sold DESC) AS sales_rank
+          FROM
+              product_sales
+      )
+      SELECT
+          product_id,
+          product_name,
+          product_selling_price,
+          total_revenue,
+          times_sold,
+          percentage_sale,
+          revenue_rank,
+          sales_rank
+      FROM
+          ranked_products
+      WHERE
+          sales_rank BETWEEN 1 AND 3
+      ORDER BY
+          sales_rank, revenue_rank
+      LIMIT 7;
+    `;
+    const bestProductReportResult = await pool.query(bestProductReportQuery);
+    return bestProductReportResult.rows;
+  }
+  async getLineChartReport () {
+
+  }
+
 }
 
 const reportService = new ReportService();
