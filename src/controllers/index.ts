@@ -8,6 +8,7 @@ import employeeController from './employee.controller';
 import bannerController from './banner.controller';
 import profileController from './profile.controller';
 import reportController from './report.controller';
+import customerController from './customer.controller';
 
 export {
     AuthController,
@@ -19,5 +20,6 @@ export {
     employeeController,
     bannerController,
     profileController,
-    reportController
+    reportController,
+    customerController
 }
