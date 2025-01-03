@@ -555,6 +555,87 @@ paths:
       responses:
         "200":
           description: successful
+  /product/inventory:
+    get:
+      summary: Retrieve a paginated list of product inventory
+      description: Fetch a list of products from the inventory with pagination support.
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: The number of items per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successfully retrieved product inventory.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_items:
+                    type: integer
+                    description: Total number of products in the inventory.
+                  total_pages:
+                    type: integer
+                    description: Total number of pages available.
+                  current_page:
+                    type: integer
+                    description: Current page number.
+                  page_size:
+                    type: integer
+                    description: Number of items per page.
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Unique identifier for the product.
+                        name:
+                          type: string
+                          description: Name of the product.
+                        quantity:
+                          type: integer
+                          description: Quantity of the product in stock.
+                        price:
+                          type: number
+                          format: float
+                          description: Price of the product.
+        '400':
+          description: Bad request due to invalid query parameters.
+        '500':
+          description: Internal server error.
+  /product/search_random:
+    get:
+      tags:
+        - product
+      summary: Get random products
+      description: Get random products
+      operationId: getRandomProducts
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/product"
+        "400":
+          description: Invalid request
+  
+  
   /grn:
     post:
       tags:
@@ -1307,133 +1388,213 @@ paths:
           description: Invalid request
         "500":
           description: Invalid request
-  /report:
+  
+  /report/products:
     get:
       tags:
-        - owner
-      summary: Get all reports
-      description: Get all reports
-      operationId: getReports
+        - report
+      summary: Get Products Report
+      description: Fetches a report about products.
       security:
         - BearerAuth: []
       responses:
-        "200":
-          description: successful operation
+        200:
+          description: Successful response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/receipt"
-        "400":
-          description: Invalid request
-  /report/{report_id}:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        500:
+          description: Server error
+
+  /report/revenue:
     get:
       tags:
-        - owner
-      summary: Get report by id
-      description: Get report by id
-      operationId: getReportById
+        - report
+      summary: Get Revenue Report
+      description: Fetches a report about revenue.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/low-stock:
+    get:
+      tags:
+        - report
+      summary: Get Low Stock Report
+      description: Fetches a report about products with low stock.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/summary-stock:
+    get:
+      tags:
+        - report
+      summary: Get Stock Summary
+      description: Fetches a summary report about stock.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/buyreport:
+    get:
+      tags:
+        - report
+      summary: Get Buy Report
+      description: Fetches a report about purchase transactions.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/sell_buy:
+    get:
+      tags:
+        - report
+      summary: Get Sell and Buy Report
+      description: Fetches a comparative report of sell and buy data.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/orders:
+    get:
+      tags:
+        - report
+      summary: Get Orders Report
+      description: Fetches a report about orders.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/best_sallers:
+    get:
+      tags:
+        - report
+      summary: Get Best Sellers Report
+      description: Fetches a report about best-selling products.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/linecharts:
+    get:
+      tags:
+        - report
+      summary: Get Line Chart Report
+      description: Fetches data for generating a line chart report.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Server error
+
+  /report/get-report:
+    get:
+      tags:
+        - report
+      summary: Get General Report
+      description: Fetches a general report with optional date filtering.
       security:
         - BearerAuth: []
       parameters:
-        - name: report_id
-          in: path
-          description: ID of report to return
-          required: true
+        - name: begin
+          in: query
+          description: Start date in dd/MM/yyyy format.
+          required: false
           schema:
             type: string
-            format: uuid
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/receipt"
-        "400":
-          description: Invalid request
-    put:
-      tags:
-        - owner
-      summary: Update report by id
-      description: Update report by id
-      operationId: updateReportById
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: report_id
-          in: path
-          description: ID of report to return
-          required: true
+        - name: end
+          in: query
+          description: End date in dd/MM/yyyy format.
+          required: false
           schema:
-            type: number
-            format: int2
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                receipt_date:
-                  type: string
-                  format: date
-                receipt_total:
-                  type: number
-                  format: float
-              required:
-                - receipt_date
-                - receipt_total
-        required: true
+            type: string
       responses:
-        "200":
-          description: successful operation
+        200:
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/receipt"
-        "400":
-          description: Invalid request
-    delete:
-      tags:
-        - owner
-      summary: Delete report by id
-      description: Delete report by id
-      operationId: deleteReportById
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: report_id
-          in: path
-          description: ID of report to return
-          required: true
-          schema:
-            type: number
-            format: int2
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid request
-  /product/search_random:
-    get:
-      tags:
-        - product
-      summary: Get random products
-      description: Get random products
-      operationId: getRandomProducts
-      responses:
-        "200":
-          description: successful operation
+                type: object
+        400:
+          description: Invalid date format
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/product"
-        "400":
-          description: Invalid request
-  
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Server error
   /banner:
     get:
       tags:
@@ -1489,67 +1650,7 @@ paths:
           description: Unauthorized. Access token is missing or invalid.
         "500":
           description: Internal server error. Something went wrong on the server.
-  /product/inventory:
-    get:
-      summary: Retrieve a paginated list of product inventory
-      description: Fetch a list of products from the inventory with pagination support.
-      parameters:
-        - name: page
-          in: query
-          description: The page number to retrieve.
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: page_size
-          in: query
-          description: The number of items per page.
-          required: false
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Successfully retrieved product inventory.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total_items:
-                    type: integer
-                    description: Total number of products in the inventory.
-                  total_pages:
-                    type: integer
-                    description: Total number of pages available.
-                  current_page:
-                    type: integer
-                    description: Current page number.
-                  page_size:
-                    type: integer
-                    description: Number of items per page.
-                  items:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          description: Unique identifier for the product.
-                        name:
-                          type: string
-                          description: Name of the product.
-                        quantity:
-                          type: integer
-                          description: Quantity of the product in stock.
-                        price:
-                          type: number
-                          format: float
-                          description: Price of the product.
-        '400':
-          description: Bad request due to invalid query parameters.
-        '500':
-          description: Internal server error.
+  
 
 components:
   schemas:

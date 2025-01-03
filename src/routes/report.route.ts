@@ -18,8 +18,13 @@ router.get('/', reportController.getReport);
 
 // không có số lượng hàng đã bán vì không có product_list trong bảng receipt
 router.get('/products', reportController.productsReport);
-// router.get('/purchases', reportController.purchasesReport);
 router.get('/revenue', reportController.revenueReport);
 router.get("/low-stock", reportController.lowStockReport);
+router.get("/summary-stock", reportController.stockReport);
+router.get("/buyreport", reportController.buyReport);
+router.get("/sell_buy", reportController.sellBuyReport);
+router.get("/orders", reportController.ordersReport);
+router.get("/best_sallers", reportController.bestProductReport);
+router.get("/linecharts", reportController.lineChartReport);
 
 export default router;
