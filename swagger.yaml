@@ -1650,10 +1650,194 @@ paths:
           description: Unauthorized. Access token is missing or invalid.
         "500":
           description: Internal server error. Something went wrong on the server.
-  
+  /customer/cart:
+    get:
+      summary: Get all cart items
+      description: Retrieve all items in the user's cart.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: A list of cart items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CartItem"
+        "500":
+          description: Internal server error.
+    post:
+      summary: Add product to cart
+      description: Add a product to the user's cart.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                  example: "12345"
+                quantity:
+                  type: integer
+                  example: 2
+              required:
+                - product_id
+                - quantity
+      responses:
+        "200":
+          description: Product added to cart successfully.
+        "400":
+          description: Invalid request payload.
+        "404":
+          description: Product not found.
+        "500":
+          description: Internal server error.
+  /customer/cart/{product_id}:
+    put:
+      summary: Edit cart item
+      description: Update the quantity of a product in the user's cart.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "12345"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  example: 3
+              required:
+                - quantity
+      responses:
+        "200":
+          description: Cart item updated successfully.
+        "500":
+          description: Internal server error.
+    delete:
+      summary: Remove product from cart
+      description: Remove a product from the user's cart.
+      tags:
+        - Cart
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "12345"
+      responses:
+        "200":
+          description: Product removed from cart successfully.
+        "500":
+          description: Internal server error.
+  /customer/favourite:
+    get:
+      summary: Get all favourites
+      description: Retrieve all favourite products of the user.
+      tags:
+        - Favourites
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: A list of favourite products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FavouriteItem"
+        "500":
+          description: Internal server error.
+    post:
+      summary: Add product to favourites
+      description: Add a product to the user's favourites.
+      tags:
+        - Favourites
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                  example: "12345"
+              required:
+                - product_id
+      responses:
+        "200":
+          description: Product added to favourites successfully.
+        "500":
+          description: Internal server error.
+    put:
+      summary: Remove product from favourites
+      description: Remove a product from the user's favourites.
+      tags:
+        - Favourites
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                  example: "12345"
+              required:
+                - product_id
+      responses:
+        "200":
+          description: Product removed from favourites successfully.
+        "500":
+          description: Internal server error.
 
 components:
   schemas:
+    CartItem:
+      type: object
+      properties:
+        product_id:
+          type: string
+        quantity:
+          type: integer
+    FavouriteItem:
+      type: object
+      properties:
+        product_id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
     banner:
       type: object
       properties:

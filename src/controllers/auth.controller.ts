@@ -80,16 +80,8 @@ class AuthController {
     // Save tokens in the service (optional, if needed for token tracking/revocation)
     await userService.updateUserTokens(user, { accessToken, refreshToken });
 
-    
-    // Set the refresh token as an HTTP-only cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      sameSite: 'none', // Use 'strict' or 'lax' if cross-site requests are not needed
-      secure: true      // Ensures cookie is sent only over HTTPS
-    });
-
     // Only send the access token in the JSON response
-    return res.status(200).json({ accessToken });
+    return res.status(200).json({ accessToken , refreshToken });
 
   }
 
@@ -227,13 +219,9 @@ class AuthController {
           // Save tokens in the service (optional, if needed for token tracking/revocation)
           await userService.updateUserTokens(user, { accessToken, refreshToken });
 
-          res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true
-          });
+          
 
-          res.redirect(`http://localhost:5173/verify-email/${accessToken}`)
+          return res.status(200).json({ accessToken , refreshToken });
         }
       } catch (error) {
         console.error('Database error:', error)
