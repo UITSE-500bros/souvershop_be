@@ -75,6 +75,19 @@ class UserService {
         return user;
 
     }
+    async getUserRole(user: User) {
+        const { data: role, error } = await supabase
+            .from('role_user')
+            .select('role_id')
+            .eq('user_id', user.user_id)
+            .single();
+        if (error) {
+            console.log(error);
+            return null;
+        }
+        console.log(role);
+        return role;
+    }
 
     async getUsersByRole(role: string) {
         const userQuery = `

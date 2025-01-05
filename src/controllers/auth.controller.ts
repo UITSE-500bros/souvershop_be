@@ -30,13 +30,13 @@ class AuthController {
       updated_at: new Date()
     })
     try {
-      const response = await userService.createUser(customer , 'customer')
+      const response = await userService.createUser(customer, 'customer')
       if (!response) {
         return res.status(400).json({ message: 'Error creating user' })
       }
       const verifiedEmailToken = await signToken({
         type: 'verifiedEmail',
-        payload: { _id: response.user_id as string, user_role: 14 }
+        payload: { _id: response.user_id as string, user_role: 'khách hàng' }
       })
       await mailService.sendVerifiedEmail(user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
       await userService.updateUserTokens(response, { verifyToken: verifiedEmailToken });
@@ -68,20 +68,38 @@ class AuthController {
         return res.status(400).json({ message: 'Please verify your email' })
       }
     }
+    let role = await userService.getUserRole(user)
+    if (!role) {
+      return res.status(400).json({ message: 'Error getting user role' })
+    }
+
+    let roleName: string;
+    switch (role.role_id) {
+      case 1:
+        roleName = 'nhân viên'
+        break;
+      case 2:
+        roleName = 'khách hàng'
+        break;
+      default:
+        roleName = 'chủ cửa hàng'
+        break;
+    }
+
     const accessToken = await signToken({
       type: 'accessToken',
-      payload: { _id: user.user_id, user_role: user.user_role }
+      payload: { _id: user.user_id, user_role: roleName }
     });
     const refreshToken = await signToken({
       type: 'refreshToken',
-      payload: { _id: user.user_id, user_role: user.user_role }
+      payload: { _id: user.user_id, user_role: roleName }
     });
 
     // Save tokens in the service (optional, if needed for token tracking/revocation)
     await userService.updateUserTokens(user, { accessToken, refreshToken });
 
     // Only send the access token in the JSON response
-    return res.status(200).json({ accessToken , refreshToken });
+    return res.status(200).json({ accessToken, refreshToken });
 
   }
 
@@ -117,7 +135,28 @@ class AuthController {
     if (!user) {
       return res.status(400).json({ message: 'User does not exist' })
     }
-    const resetPasToken = await signToken({ type: 'resetPassword', payload: { _id: user.user_id, user_role: user.user_role } });
+    let role = await userService.getUserRole(user)
+    if (!role) {
+      return res.status(400).json({ message: 'Error getting user role' })
+    }
+
+    let roleName: string;
+    switch (role.role_id) {
+      case 1:
+        roleName = 'nhân viên'
+        break;
+      case 2:
+        roleName = 'khách hàng'
+        break;
+      default:
+        roleName = 'chủ cửa hàng'
+        break;
+    }
+    const resetPasToken = await signToken({
+      type: 'resetPassword',
+      payload: { _id: user.user_id, user_role: roleName }
+    });
+
     await userService.updateUserTokens(user, { resetPasToken });
     await mailService.sendResetPasswordEmail(user_email, 'Reset your password', mailTemplate(resetPasToken))
     return res.status(200).json({ message: 'Please check your email to reset password' })
@@ -125,11 +164,30 @@ class AuthController {
   async refreshToken(req: RefreshtokenRequest, res: Response) {
     try {
       const user_id_token = req.userId;
-      
+      const user = await userService.getUserByID(user_id_token)
+      let role = await userService.getUserRole(user)
+      if (!role) {
+        return res.status(400).json({ message: 'Error getting user role' })
+      }
+
+      let roleName: string;
+      switch (role.role_id) {
+        case 1:
+          roleName = 'nhân viên'
+          break;
+        case 2:
+          roleName = 'khách hàng'
+          break;
+        default:
+          roleName = 'chủ cửa hàng'
+          break;
+      }
+
+
       // Issue new accessToken (and optionally a new refreshToken if you rotate them)
       const newAccessToken = await signToken({
         type: 'accessToken',
-        payload: { _id: user_id_token , user_role: 2 },
+        payload: { _id: user_id_token, user_role: roleName },
       });
       // Return the new accessToken to the client
       return res.status(200).json({ accessToken: newAccessToken });
@@ -200,28 +258,44 @@ class AuthController {
 
             const verifiedEmailToken = await signToken({
               type: 'verifiedEmail',
-              payload: { _id: user.user_id as string, user_role: 14 }
+              payload: { _id: user.user_id as string, user_role: 'khách hàng' }
             })
             await mailService.sendVerifiedEmail(user.user_email, 'Verify your email', mailTemplate(verifiedEmailToken))
             await userService.updateUserTokens(user, { verifyToken: verifiedEmailToken });
             return res.status(201).json({ message: 'Your account created sucessfully. Please check email to confirm registration' })
           })
         } else {
+
+          let role = await userService.getUserRole(user)
+          if (!role) {
+            return res.status(400).json({ message: 'Error getting user role' })
+          }
+
+          let roleName: string;
+          switch (role.role_id) {
+            case 1:
+              roleName = 'nhân viên'
+              break;
+            case 2:
+              roleName = 'khách hàng'
+              break;
+            default:
+              roleName = 'chủ cửa hàng'
+              break;
+          }
+
           const accessToken = await signToken({
             type: 'accessToken',
-            payload: { _id: user.user_id, user_role: user.user_role }
+            payload: { _id: user.user_id, user_role: roleName }
           });
           const refreshToken = await signToken({
             type: 'refreshToken',
-            payload: { _id: user.user_id, user_role: user.user_role }
+            payload: { _id: user.user_id, user_role: roleName }
           });
 
           // Save tokens in the service (optional, if needed for token tracking/revocation)
           await userService.updateUserTokens(user, { accessToken, refreshToken });
-
-          
-
-          return res.status(200).json({ accessToken , refreshToken });
+          return res.status(200).json({ accessToken, refreshToken });
         }
       } catch (error) {
         console.error('Database error:', error)
