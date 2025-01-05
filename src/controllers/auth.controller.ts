@@ -295,7 +295,8 @@ class AuthController {
 
           // Save tokens in the service (optional, if needed for token tracking/revocation)
           await userService.updateUserTokens(user, { accessToken, refreshToken });
-          return res.status(200).json({ accessToken, refreshToken });
+          // return res.status(200).json({ accessToken, refreshToken });
+          res.redirect(`http://localhost:5173/verifyEmail?accessToken=${accessToken}&refreshToken=${refreshToken}`)
         }
       } catch (error) {
         console.error('Database error:', error)
