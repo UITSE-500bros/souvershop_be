@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import GRNService from '../services/grn.service';
+import { AuthenticatedRequest } from 'src/middleware/authorizeRole';
 
 class GRNController {
     private readonly EDIT_TIME_LIMIT_MINUTES = 15;
@@ -55,10 +56,11 @@ class GRNController {
         }
     }
 
-    async createGRN(req: Request, res: Response): Promise<Response> {
-        const { total, creater_id, product_list } = req.body;
+    async createGRN(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        const { product_list } = req.body;
+        const creater_id = req.customerId; 
         try {
-            const newGRN = await GRNService.createGRN(total, creater_id, product_list);
+            const newGRN = await GRNService.createGRN(creater_id, product_list);
             return res.status(201).json(newGRN);
         } catch (err: any) {
             return res.status(500).json({ error: 'Failed to create GRN' });
@@ -67,7 +69,7 @@ class GRNController {
 
     async updateGRN(req: Request, res: Response): Promise<Response> {
         const { grn_id } = req.params;
-        const { total, product_list } = req.body;
+        const { total, product_list, grn_status } = req.body;
         try {
             // Kiểm tra thời gian chỉnh sửa
             const isEditable = await this.isEditableGRN(grn_id);
@@ -77,7 +79,7 @@ class GRNController {
                 });
             }
 
-            const updatedGRN = await GRNService.updateGRN(grn_id, total, product_list);
+            const updatedGRN = await GRNService.updateGRN(grn_id, total, product_list, grn_status);
             return res.status(200).json(updatedGRN);
         } catch (err: any) {
             return res.status(404).json({ error: err.message });
