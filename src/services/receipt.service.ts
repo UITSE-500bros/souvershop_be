@@ -1,7 +1,11 @@
 import { pool, supabase } from "../utils";
 
 class ReceiptService {
-    async generateOrderId(customerId: string, amount: number, products: { product_id: string, quantity: number, product_total: number }[]) {
+    async generateOrderId(
+        customerId: string,
+        amount: number,
+        products: { product_id: string; quantity: number; product_total: number }[] = []
+    ) {
         try {
             const { data, error } = await supabase
                 .from("receipt")
@@ -46,7 +50,7 @@ class ReceiptService {
         }
     }
 
-    async updateOrder(orderId, responseCode) {
+    async updateOrder(orderId :string, responseCode: string) {
         const status = responseCode === "00" ? "Transaction successful" : "Transaction error";
 
         if (responseCode !== "00") {
@@ -71,7 +75,39 @@ class ReceiptService {
 
                         const { error: updateError } = await supabase
                             .from("product")
-                            .update({ product_quantity: productData.product_quantity - quantity })
+                            .update({ product_quantity: productData.product_quantity + quantity })
+                            .eq("product_id", product_id);
+
+                        if (updateError) throw updateError;
+                    } catch (err) {
+                        console.error("Error updating product:", err);
+                    }
+                })
+            );
+            await supabase.from("receipt").delete().eq("receipt_id", orderId);
+        } else {
+            const { data: orderData, error: orderError } = await supabase
+                .from("receipt")
+                .select("product_list")
+                .eq("receipt_id", orderId)
+                .single();
+
+            if (orderError) throw orderError;
+
+            await Promise.all(
+                orderData.product_list.map(async ({ product_id, quantity }) => {
+                    try {
+                        const { data: productData, error: selectError } = await supabase
+                            .from("user")
+                            .select("product")
+                            .eq("product_id", product_id)
+                            .single();
+
+                        if (selectError) throw selectError;
+
+                        const { error: updateError } = await supabase
+                            .from("product")
+                            .update({ product_sold: productData.product_sold + quantity })
                             .eq("product_id", product_id);
 
                         if (updateError) throw updateError;
