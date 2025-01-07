@@ -1236,7 +1236,7 @@ paths:
   /receipt/create_payment_url:
     post:
       tags:
-        - order
+        - Customer
       description: Create payment url
       security:
         - BearerAuth: []
