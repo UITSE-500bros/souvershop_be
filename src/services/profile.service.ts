@@ -58,6 +58,22 @@ class ProfileService {
     const updatedUser = data[0] as unknown as User;
     return updatedUser;
   }
+  async getProfile(userId: string): Promise<User> {
+    const { data, error } = await supabase
+      .from('user')
+      .select('user_id, user_name,user_email, user_address, user_phone_number, user_avatar')
+      .eq('user_id', userId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (!data || data.length === 0) {
+      throw new Error('User not found');
+    }
+
+    const user = data[0] as unknown as User;
+    return user;
+  }
 }
 
 const profileService = new ProfileService();
