@@ -85,38 +85,39 @@ class ReceiptService {
                 })
             );
             await supabase.from("receipt").delete().eq("receipt_id", orderId);
-        } else {
-            const { data: orderData, error: orderError } = await supabase
-                .from("receipt")
-                .select("product_list")
-                .eq("receipt_id", orderId)
-                .single();
-
-            if (orderError) throw orderError;
-
-            await Promise.all(
-                orderData.product_list.map(async ({ product_id, quantity }) => {
-                    try {
-                        const { data: productData, error: selectError } = await supabase
-                            .from("user")
-                            .select("product")
-                            .eq("product_id", product_id)
-                            .single();
-
-                        if (selectError) throw selectError;
-
-                        const { error: updateError } = await supabase
-                            .from("product")
-                            .update({ product_sold: productData.product_sold + quantity })
-                            .eq("product_id", product_id);
-
-                        if (updateError) throw updateError;
-                    } catch (err) {
-                        console.error("Error updating product:", err);
-                    }
-                })
-            );
         }
+        // else {
+        //     const { data: orderData, error: orderError } = await supabase
+        //         .from("receipt")
+        //         .select("product_list")
+        //         .eq("receipt_id", orderId)
+        //         .single();
+
+        //     if (orderError) throw orderError;
+
+        //     await Promise.all(
+        //         orderData.product_list.map(async ({ product_id, quantity }) => {
+        //             try {
+        //                 const { data: productData, error: selectError } = await supabase
+        //                     .from("user")
+        //                     .select("product")
+        //                     .eq("product_id", product_id)
+        //                     .single();
+
+        //                 if (selectError) throw selectError;
+
+        //                 const { error: updateError } = await supabase
+        //                     .from("product")
+        //                     .update({ product_sold: productData.product_sold + quantity })
+        //                     .eq("product_id", product_id);
+
+        //                 if (updateError) throw updateError;
+        //             } catch (err) {
+        //                 console.error("Error updating product:", err);
+        //             }
+        //         })
+        //     );
+        // }
 
         const { data, error } = await supabase
             .from("receipt")
