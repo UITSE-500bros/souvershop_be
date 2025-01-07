@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from 'src/middleware/authorizeRole';
 export class ProductController {
 
   async getAllProducts(req: AuthenticatedRequest, res: Response): Promise<Response> {
-    const user_id = req.customerId;
+    const user_id = req.userId;
     try {
       const products = await ProductService.getAllProducts(user_id);
       return res.status(200).json(products);
@@ -14,7 +14,7 @@ export class ProductController {
   }
 
   async getProductById(req: AuthenticatedRequest, res: Response): Promise<Response> {
-    const user_id = req.customerId;
+    const user_id = req.userId;
     const { product_id } = req.params;
     try {
       const product = await ProductService.getProduct(product_id, user_id);

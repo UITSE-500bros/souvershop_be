@@ -7,7 +7,7 @@ declare global {
     }
 }
 export interface AuthenticatedRequest extends Request {
-    customerId?: string; // Custom user identifier
+    userId?: string; // Custom user identifier
 }
 export interface RefreshtokenRequest extends Request {
     cookies: any;

@@ -1,4 +1,4 @@
-import { supabase } from "../utils";
+import { pool, supabase } from "../utils";
 
 class ReceiptService {
     async generateOrderId(customerId, amount, products) {
@@ -79,6 +79,21 @@ class ReceiptService {
 
         if (error) throw error;
         return data;
+    }
+    async updateOrderStatus(orderId, status) {
+        const orderQuery = await supabase.from("receipt").select().eq("receipt_id", orderId);
+        if (orderQuery.error) throw orderQuery.error;
+
+        await pool.query(
+            'UPDATE receipt SET order_status = $1 WHERE receipt_id = $2',
+            [status, orderId]
+        );
+
+        return {
+            message: 'Order has been successfully cancelled',
+            orderId,
+            status: status,
+        };
     }
 }
 

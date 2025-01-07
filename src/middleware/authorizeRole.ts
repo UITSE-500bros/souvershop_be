@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
 export interface AuthenticatedRequest extends Request {
-    customerId?: string; // Custom user identifier
+    userId?: string; // Custom user identifier
 }
 
 
@@ -19,7 +19,7 @@ const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunc
 
     // Replace 'your-secret-key' with your actual JWT secret
     const decoded = jwt.verify(token, 'souvershop') ;
-    req.customerId = (decoded as jwt.JwtPayload)._id; // Attach user_id to request
+    req.userId = (decoded as jwt.JwtPayload)._id; // Attach user_id to request
     next(); // Proceed to the next middleware/controller
   } catch (error) {
     console.error('Error in authMiddleware:', error);

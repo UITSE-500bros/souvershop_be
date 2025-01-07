@@ -42,7 +42,7 @@ class ReceiptController {
     const secretKey: string = process.env.VNP_HASH_SECRET
     const vnpUrl: string = process.env.VNP_URL
     const returnUrl: string = process.env.VNP_RETURN_URL;
-    const customerId: string = req.customerId;
+    const customerId: string = req.userId;
 
     const orderId = await receiptService.generateOrderId(customerId, amount, req.body.products);
 
@@ -127,7 +127,7 @@ class ReceiptController {
   async cashonDeilvery(req: AuthenticatedRequest, res: Response) {
     const { products, amount } = req.body;
     try {
-      const orderId = await receiptService.generateOrderId(req.customerId, amount, products);
+      const orderId = await receiptService.generateOrderId(req.userId, amount, products);
       return res.status(200).json(`Order ${orderId} created successfully`);
     } catch (error) {
       return res.status(500).json(error);

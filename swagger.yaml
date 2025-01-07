@@ -1388,7 +1388,6 @@ paths:
           description: Invalid request
         "500":
           description: Invalid request
-  
   /report/products:
     get:
       tags:
@@ -1819,7 +1818,27 @@ paths:
           description: Product removed from favourites successfully.
         "500":
           description: Internal server error.
-
+  /customer/cancel_order/{order_id}:
+    post:
+      tags:
+        - Customer
+      summary: Cancel an order
+      description: Cancel an order by the customer
+      operationId: cancelOrder
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: string
+        "400":
+          description: Invalid request
+        "500":
+          description: Invalid request
 components:
   schemas:
     CartItem:
