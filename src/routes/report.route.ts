@@ -26,5 +26,6 @@ router.get("/sell_buy", reportController.sellBuyReport);
 router.get("/orders", reportController.ordersReport);
 router.get("/best_sallers", reportController.bestProductReport);
 router.get("/linecharts", reportController.lineChartReport);
+router.get("/inventory-report", reportController.inventoryReport);
 
 export default router;

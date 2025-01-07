@@ -294,6 +294,16 @@ class ReportService {
   async getLineChartReport() {
 
   }
+  async getInventoryReport() {
+    const inventoryReportQuery = `
+      SELECT 
+        (SELECT COUNT(*) FROM product) AS product_count,
+        (SELECT SUM(total) FROM receipt) AS revenue,
+        (SELECT COUNT(*) FROM category) AS category_count
+    `;
+    const inventoryReportResult = await pool.query(inventoryReportQuery);
+    return inventoryReportResult.rows[0];
+  }
 
 }
 
