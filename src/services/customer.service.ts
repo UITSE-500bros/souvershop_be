@@ -61,7 +61,7 @@ class CustomerService {
       throw new Error('User not found');
     }
     const productList: ProductList[] = userResult.rows[0].product_list || [];
-
+    let total_cart = 0;
     const cartItems = await Promise.all(productList.map(async (item) => {
       const productResult = await pool.query(`
             SELECT product_id, product_name, product_image, product_selling_price, is_sale, percentage_sale
@@ -74,13 +74,18 @@ class CustomerService {
       }
 
       const product = productResult.rows[0];
+      total_cart += product.product_selling_price * item.quantity
       return {
         ...product,
         quantity: item.quantity,
       };
+      
     }));
 
-    return cartItems;
+    return {
+      products_list: cartItems,
+      total_cart
+    };
   }
 
   async addToCart(
