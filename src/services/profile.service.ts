@@ -46,7 +46,7 @@ class ProfileService {
       .from('user')
       .update(updateData)
       .eq('user_id', userId)
-      .select();
+      .select('user_name, user_address, user_phone_number, user_avatar');
 
     if (error) {
       console.error('Database update error:', error);
@@ -59,7 +59,7 @@ class ProfileService {
   async getProfile(userId: string): Promise<User> {
     const { data, error } = await supabase
       .from('user')
-      .select('user_id, user_name,user_email, user_address, user_phone_number, user_avatar')
+      .select('user_name,user_email, user_address, user_phone_number, user_avatar')
       .eq('user_id', userId);
 
     if (error) {
