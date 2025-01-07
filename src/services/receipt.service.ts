@@ -1,7 +1,7 @@
 import { pool, supabase } from "../utils";
 
 class ReceiptService {
-    async generateOrderId(customerId: string, amount: number, products: any) {
+    async generateOrderId(customerId: string, amount: number, products: { product_id: string, quantity: number, product_total: number }[]) {
         try {
             const { data, error } = await supabase
                 .from("receipt")
