@@ -12,7 +12,7 @@ class ProfileService {
   async updateProfile(userId: string, updatedFields: UpdateFields): Promise<User> {
     const updateData: Partial<User> = {};
 
-    // cập nhật các field được truyền vào
+    // Update fields if they are provided
     if (updatedFields.user_name) {
       updateData.user_name = updatedFields.user_name;
     }
@@ -23,25 +23,25 @@ class ProfileService {
       updateData.user_phone_number = updatedFields.user_phone_number;
     }
 
-    // upload avatar nếu có
+    // Upload avatar if file is provided
     if (updatedFields.file) {
-      const filePath = `${userId}`;
+      const filePath = `${userId}/${updatedFields.file.originalname}`;
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, updatedFields.file.buffer, {
           contentType: updatedFields.file.mimetype,
-          upsert: true,
+          upsert: true, // Overwrite if exists
         });
 
       if (uploadError) {
-        throw uploadError;
+        console.error('Avatar upload error:', uploadError);
+        throw new Error(uploadError.message); // Throw error if upload fails
       }
 
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-      updateData.user_avatar = data.publicUrl;
+      const { data: fileData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      updateData.user_avatar = fileData?.publicUrl; // Set avatar URL only if the file is uploaded successfully
     }
-
-    // cập nhật user trong supabase
+    // Update user data in Supabase
     const { data, error } = await supabase
       .from('user')
       .update(updateData)
@@ -49,14 +49,12 @@ class ProfileService {
       .select();
 
     if (error) {
-      throw new Error(error.message);
-    }
-    if (!data || data.length === 0) {
-      throw new Error('User not found');
+      console.error('Database update error:', error);
+      throw new Error(error.message); // Throw error if DB update fails
     }
 
-    const updatedUser = data[0] as unknown as User;
-    return updatedUser;
+    // Return the updated user (first item from returned data)
+    return data?.[0] as User;
   }
   async getProfile(userId: string): Promise<User> {
     const { data, error } = await supabase
