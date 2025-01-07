@@ -113,7 +113,7 @@ class ReportService {
   }
   // Doanh số
   async getRevenueReport() {
-    const salesReportQuery = `
+    const totalSalesReportQuery = `
       SELECT
           SUM(total_quantity) AS grand_total_quantity
       FROM (
@@ -129,20 +129,51 @@ class ReportService {
           GROUP BY receipt_id
       ) final_subquery;
     `;
-    // const costReportQuery = `
-    //   SELECT 
-    //       SUM(u.salary) AS total_salary
-    //   FROM 
-    //       public.user u
-    //   JOIN 
-    //       public.role_user ru ON u.user_id = ru.user_id
-    //   WHERE 
-    //       ru.role_id = 1;
-    // `;
+    const salaryReportQuery = `
+      SELECT 
+          SUM(u.salary) AS total_salary
+      FROM 
+          public.user u
+      JOIN 
+          public.role_user ru ON u.user_id = ru.user_id
+      WHERE 
+          ru.role_id = 1;
+    `;
 
-    const revenueReportQuery = salesReportQuery;
+    const grnReportQuery = ` 
+      SELECT
+          SUM(total) AS total_grn
+      FROM
+          grn;
+    `;
+    const grn_total = await pool.query(grnReportQuery);
+    const salaryResult = await pool.query(salaryReportQuery);
+
+    const profitReportQuery = `
+      SELECT 
+          (SUM(receipt.total) - ${salaryResult.rows[0].total_salary}- ${grn_total.rows[0].total_grn}) AS total_profit
+      FROM 
+          receipt
+    `;
+
+    const revenueReportQuery = `
+      SELECT 
+          SUM(receipt.total) AS total_revenue
+      FROM 
+          receipt;
+    `;
+
     const revenueReportResult = await pool.query(revenueReportQuery);
-    return revenueReportResult;
+    const profitReportResult = await pool.query(profitReportQuery);
+    const salesReportResult = await pool.query(totalSalesReportQuery);
+    const costReportResult = salaryResult.rows[0].total_salary +  grn_total.rows[0].total_grn;
+
+    return {
+      total_revenue: revenueReportResult.rows[0].total_revenue,
+      total_profit: profitReportResult.rows[0].total_profit,
+      total_sales: salesReportResult.rows[0].grand_total_quantity,
+      total_cost: costReportResult
+    };
 
   }
   // Mua hàng
@@ -200,7 +231,7 @@ class ReportService {
 
   }
   async getOrdersReport() {
-    
+
 
   }
   async getBestProductReport() {
@@ -260,7 +291,7 @@ class ReportService {
     const bestProductReportResult = await pool.query(bestProductReportQuery);
     return bestProductReportResult.rows;
   }
-  async getLineChartReport () {
+  async getLineChartReport() {
 
   }
 
