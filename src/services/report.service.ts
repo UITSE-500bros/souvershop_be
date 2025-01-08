@@ -232,7 +232,7 @@ class ReportService {
         (SELECT COUNT(*) FROM grn) AS total_purchase,
         (SELECT SUM(total) FROM grn) AS total_expense,
         (SELECT SUM(total) FROM receipt
-          WHERE status = 'Đã huỷ'
+          WHERE status = 'Đã hủy'
         ) AS total_canceled,
         (SELECT SUM(total) FROM receipt
           WHERE status = 'Đã trả hàng'
