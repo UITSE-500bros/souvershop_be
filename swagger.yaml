@@ -1099,6 +1099,11 @@ paths:
                   format: int4
                   description: The salary of the employee
                   example: 50000
+                create_at:
+                  type: string
+                  format: date-time
+                  description: The date and time the employee account was created
+                  example: 2021-01-01T00:00:00Z
                 file:
                   type: string
                   format: binary

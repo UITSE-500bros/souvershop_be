@@ -7,7 +7,7 @@ import { User } from '../models';
 class OwnerController {
     async createEmployeeAccount(req: Request, res: Response) {
         try {
-            const { user_name, user_password, user_email, user_phoneNumber, salary,user_address } = req.body;
+            const { user_name, user_password, user_email, user_phoneNumber, salary,user_address,create_at } = req.body;
             const file = req.file;
 
             if (!user_name || !user_password || !user_email || !user_phoneNumber || !salary) {
@@ -30,7 +30,7 @@ class OwnerController {
                         user_name,
                         user_password,
                         user_email,
-                        created_at: new Date(),
+                        created_at: create_at,
                         updated_at: new Date(),
                         user_avatar: file ? file.path : null,
                         user_phone_number: user_phoneNumber,
