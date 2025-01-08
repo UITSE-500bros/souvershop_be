@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import GRNService from '../services/grn.service';
+import { AuthenticatedRequest } from '../middleware/authorizeRole';
 
 class GRNController {
     private readonly EDIT_TIME_LIMIT_MINUTES = 15;
@@ -55,8 +56,9 @@ class GRNController {
         }
     }
 
-    async createGRN(req: Request, res: Response): Promise<Response> {
-        const { total, creater_id, product_list } = req.body;
+    async createGRN(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        const creater_id  = req.userId;
+        const { total, product_list } = req.body;
         try {
             const newGRN = await GRNService.createGRN(total, creater_id, product_list);
             return res.status(201).json(newGRN);
