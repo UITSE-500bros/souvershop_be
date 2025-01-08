@@ -253,40 +253,40 @@ class ReportService {
                     total,
                     UNNEST(product_list)::jsonb ->> 'product_id' AS product_id_in_order
                 FROM
-                    public.order
-            ) o ON o.product_id_in_order::uuid = p.product_id
+                    public.receipt
+            ) o ON o.product_id_in_order::uuid = p.product_id  -- Ensure casting to UUID
         GROUP BY
             p.product_id, p.product_name, p.product_selling_price, p.percentage_sale
-      ),
-      ranked_products AS (
-          SELECT
-              product_id,
-              product_name,
-              product_selling_price,
-              total_revenue,
-              times_sold,
-              percentage_sale,
-              RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank,
-              RANK() OVER (ORDER BY times_sold DESC) AS sales_rank
-          FROM
-              product_sales
-      )
-      SELECT
-          product_id,
-          product_name,
-          product_selling_price,
-          total_revenue,
-          times_sold,
-          percentage_sale,
-          revenue_rank,
-          sales_rank
-      FROM
-          ranked_products
-      WHERE
-          sales_rank BETWEEN 1 AND 3
-      ORDER BY
-          sales_rank, revenue_rank
-      LIMIT 7;
+    ),
+    ranked_products AS (
+        SELECT
+            product_id,
+            product_name,
+            product_selling_price,
+            total_revenue,
+            times_sold,
+            percentage_sale,
+            RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank,
+            RANK() OVER (ORDER BY times_sold DESC) AS sales_rank
+        FROM
+            product_sales
+    )
+    SELECT
+        product_id,
+        product_name,
+        product_selling_price,
+        total_revenue,
+        times_sold,
+        percentage_sale,
+        revenue_rank,
+        sales_rank
+    FROM
+        ranked_products
+    WHERE
+        sales_rank BETWEEN 1 AND 3
+    ORDER BY
+        sales_rank, revenue_rank
+    LIMIT 7;
     `;
     const bestProductReportResult = await pool.query(bestProductReportQuery);
     return bestProductReportResult.rows;
