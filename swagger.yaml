@@ -1040,7 +1040,7 @@ paths:
           description: Customer, receipt, or product not found.
         500:
           description: Internal server error.
-  /admin/employees:
+  /admin/get_employee:
     get:
       tags:
         - owner
