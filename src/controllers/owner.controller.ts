@@ -7,7 +7,7 @@ import { User } from '../models';
 class OwnerController {
     async createEmployeeAccount(req: Request, res: Response) {
         try {
-            const { user_name, user_password, user_email, user_phoneNumber, salary,user_address,create_at } = req.body;
+            const { user_name, user_password, user_email, user_phoneNumber, salary, user_address, create_at } = req.body;
             const file = req.file;
 
             if (!user_name || !user_password || !user_email || !user_phoneNumber || !salary) {
@@ -19,35 +19,30 @@ class OwnerController {
                 return res.status(409).json({ message: 'Employee account already exists' });
             }
 
-            if(file) {
-                if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
-                    return res.status(400).json({ message: 'Invalid file type' });
+            // Create new employee account
+            const newUser = new User(
+                {
+                    user_name,
+                    user_password,
+                    user_email,
+                    created_at: create_at,
+                    updated_at: new Date(),
+                    user_avatar: file ? file.path : null,
+                    user_phone_number: user_phoneNumber,
+                    staff_salary: salary,
+                    user_address: user_address
                 }
+            );
 
-                // Create new employee account
-                const newUser = new User(
-                    {
-                        user_name,
-                        user_password,
-                        user_email,
-                        created_at: create_at,
-                        updated_at: new Date(),
-                        user_avatar: file ? file.path : null,
-                        user_phone_number: user_phoneNumber,
-                        staff_salary: salary,
-                        user_address: user_address
-                    }
-                );
-                
-                const user = await userService.createEmployee(newUser, 'employee');
+            const user = await userService.createEmployee(newUser, 'employee');
 
+            if(file){
                 const updateFields: UpdateFields = {
                     file: file
                 };
                 await profileService.updateProfile(user.user_id, updateFields);
-                return res.status(201).json({ message: 'Employee account created successfully' });
             }
-            return res.status(400).json({ message: 'Missing required fields: avatar' });
+            return res.status(201).json({ message: 'Employee account created successfully' });
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
         }
@@ -59,7 +54,7 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
-            if (!userService.getUserByEmail(email)){
+            if (!userService.getUserByEmail(email)) {
                 return res.status(404).json({ message: 'Employee account not found' });
             }
             // Update employee account
@@ -75,8 +70,8 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
-            
-            if (!userService.getUserByEmail(user_email)){
+
+            if (!userService.getUserByEmail(user_email)) {
                 return res.status(404).json({ message: 'Employee account not found' });
             }
             // Delete employee account
@@ -93,13 +88,13 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if employee account exists
-            if (!userService.getUserByEmail(user_email)){
+            if (!userService.getUserByEmail(user_email)) {
                 return res.status(404).json({ message: 'Employee account not found' });
             }
             // Get employee account detail
 
             const employee = await userService.getUserByEmail(user_email);
-            
+
             return res.status(200).json(employee);
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
@@ -142,7 +137,7 @@ class OwnerController {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
             // Check if customer account exists
-            if (!userService.getUserByEmail(user_email)){
+            if (!userService.getUserByEmail(user_email)) {
                 return res.status(404).json({ message: 'Customer account not found' });
             }
             const customer = await userService.getUserByEmail(user_email);
@@ -216,7 +211,7 @@ class OwnerController {
                             updated_at: new Date()
                         }
                     );
-                    await userService.createUser(newUser , 'employee');
+                    await userService.createUser(newUser, 'employee');
                     successCount++;
                 } catch (err) {
                     errors.push({ row, error: (err as Error).message });
