@@ -56,15 +56,17 @@ class GRNService {
         return result.rows;
     }
 
-    async createGRN(total: number, createrId: string, productList: ProductList[]) {
+    async createGRN(total: number, createrId: string, productList: any) {
+        console.log(total);
         const result = await pool.query(
-            `INSERT INTO grn (total, created_at,,updated_at, creater_id, product_list,grn_status)
-            VALUES ($1, NOW(),NOW(), $2, $3,'TRUE)
+            `INSERT INTO grn (total, created_at, creater_id, product_list, grn_status)
+            VALUES ($1, NOW(), $2, $3, 'TRUE')
             RETURNING *`,
             [total, createrId, JSON.stringify(productList)]
         );
         return result.rows[0];
     }
+    
 
     async updateGRN(grnId: string, total: number, productList: ProductList[]) {
         const result = await pool.query(
