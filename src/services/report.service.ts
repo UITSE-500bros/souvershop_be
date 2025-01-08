@@ -210,7 +210,17 @@ class ReportService {
     const stockReportQuery = `
       SELECT 
         (SELECT COUNT(*) FROM product) AS product_count,
-        (SELECT SUM(product_quantity) FROM product) AS total_quantity
+        (SELECT
+              SUM((product->>'quantity')::int) AS total_shipping_products
+          FROM
+              public.receipt
+          CROSS JOIN LATERAL
+              unnest(receipt.product_list) AS product_list_element(product)
+          WHERE
+              status = 'Đang giao hàng'  -- Filter by orders that are being delivered
+              AND product_list IS NOT NULL  -- Ensure product_list is not null
+              AND product_list_element.product->>'quantity' IS NOT NULL
+        ) as total_shipping_products
     `;
     const stockReportResult = await pool.query(stockReportQuery);
     return stockReportResult.rows[0];
