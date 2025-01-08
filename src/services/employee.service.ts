@@ -26,6 +26,9 @@ class EmployeeService {
                 .eq('user_id', employee_id),
             supabase.from('users')
                 .delete()
+                .eq('user_id', employee_id),
+            supabase.from('role_user')
+                .delete()
                 .eq('user_id', employee_id)
         ]);
         

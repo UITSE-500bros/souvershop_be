@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import ProductService from '../services/product.service';
 import { AuthenticatedRequest } from 'src/middleware/authorizeRole';
+import productService from '../services/product.service';
 export class ProductController {
 
   async getAllProducts(req: AuthenticatedRequest, res: Response): Promise<Response> {
@@ -124,10 +125,19 @@ export class ProductController {
   }
   async getRandomProduct(req: AuthenticatedRequest, res: Response) {
     try {
-      const product = await ProductService.getRandomProduct();
+      const product = await productService.getRandomProduct();
       return res.status(200).json(product);
     } catch (err) {
       return res.status(500).json({ error: 'Failed to retrieve product' });
+    }
+  }
+
+  async getProductforLookup(req: Request, res: Response): Promise<Response> {
+    try {
+      const products = await productService.getProductforLookup();
+      return res.status(200).json(products);
+    } catch (err) {
+      return res.status(500).json({ error: 'Failed to retrieve products' });
     }
   }
 }

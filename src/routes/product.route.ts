@@ -12,5 +12,5 @@ router.delete('/:product_id', productController.deleteProduct);
 router.get('/search/:product_name', productController.searchProductByName);
 router.get('/:product_id',authMiddleware, productController.getProductById);
 router.get('/',authMiddleware, productController.getAllProducts);
-
+router.get('/product/lookup',authMiddleware, productController.getProductforLookup);
 export default router;

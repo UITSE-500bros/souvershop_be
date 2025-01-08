@@ -214,6 +214,15 @@ class ProductService {
         console.log(result.rows);
         return result.rows;
     }
+    async getProductforLookup() {
+        const query = `
+            SELECT product_id, product_name, product_quantity, product_selling_price, product_import_price
+            FROM product
+        
+        `;
+        const result = await pool.query(query);
+        return result.rows;
+    }   
 }
 
 const productService = new ProductService;

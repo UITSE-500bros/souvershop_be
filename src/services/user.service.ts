@@ -160,7 +160,6 @@ class UserService {
             return null;
         }
     }
-    
 }
 const userService = new UserService();
 

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { UpdateFields } from '../services/profile.service';
 import * as xlsx from 'xlsx';
-import { profileService, userService } from '../services';
+import { employeeService, profileService, userService } from '../services';
 import { User } from '../models';
 
 class OwnerController {
@@ -61,7 +61,6 @@ class OwnerController {
             if (!userService.getUserByEmail(email)){
                 return res.status(404).json({ message: 'Employee account not found' });
             }
-            
             // Update employee account
             return res.status(200).json({ message: 'Employee account updated successfully' });
         } catch (error) {
@@ -80,9 +79,7 @@ class OwnerController {
                 return res.status(404).json({ message: 'Employee account not found' });
             }
             // Delete employee account
-
-
-
+            await employeeService.deleteEmployee(user_email);
             return res.status(200).json({ message: 'Employee account deleted successfully' });
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
