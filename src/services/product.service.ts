@@ -145,24 +145,41 @@ class ProductService {
     
     async getInventoryByProductId(product_id: string) {
         const result = await pool.query(
-            `SELECT 
-                product_id,
-                product_name,
-                (product_image->0) as main_img,
-                product_import_price,
-                product_selling_price,
-                product_quantity
-            FROM product 
-            WHERE product_id = $1`,
+            `
+            SELECT 
+                p.product_id,
+                p.product_name,
+                (p.product_image->0) AS main_img,
+                p.product_import_price,
+                p.product_selling_price,
+                p.product_quantity,
+                COALESCE(SUM((product_list_element->>'quantity')::int), 0) AS total_sold,
+                c.category_name
+            FROM 
+                product p
+            LEFT JOIN 
+                receipt r ON r.status = 'Đang giao hàng'
+            LEFT JOIN 
+                LATERAL unnest(r.product_list) AS product_list_element(product_list_element)
+                ON (product_list_element->>'product_id')::uuid = p.product_id
+            LEFT JOIN 
+                category c ON p.category_id = c.category_id
+            WHERE 
+                p.product_id = $1
+            GROUP BY 
+                p.product_id, p.product_name, p.product_image::text, p.product_import_price, 
+                p.product_selling_price, p.product_quantity, c.category_name
+            `,
             [product_id]
         );
-        
+    
         if (result.rows.length === 0) {
             throw new Error('Product not found');
         }
-        
+    
         return result.rows[0];
     }
+
 
     async getProductsByCategoryId(category_id: number, user_id: string) {
         const productsResult = await pool.query('SELECT * FROM product WHERE category_id = $1', [category_id]);

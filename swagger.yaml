@@ -616,6 +616,46 @@ paths:
           description: Bad request due to invalid query parameters.
         '500':
           description: Internal server error.
+  /product/inventory/{product_id}:
+    get:
+      tags: 
+        - inventory
+      summary: Retrieve a product from the inventory
+      description: Fetch a product from the inventory by its unique identifier.
+      parameters:
+        - name: product_id
+          in: path
+          description: Unique identifier of the product.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the product.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for the product.
+                  name:
+                    type: string
+                    description: Name of the product.
+                  quantity:
+                    type: integer
+                    description: Quantity of the product in stock.
+                  price:
+                    type: number
+                    format: float
+                    description: Price of the product.
+        '400':
+          description: Bad request due to invalid product identifier.
+        '404':
+          description: Product not found.
+        '500':
+          description: Internal server error.
   /product/search_random:
     get:
       tags:
