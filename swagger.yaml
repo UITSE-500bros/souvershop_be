@@ -1824,6 +1824,26 @@ paths:
           description: Product removed from favourites successfully.
         "500":
           description: Internal server error.
+
+    delete:
+      summary: Remove product from favourites
+      description: Remove a product from the user's favourites.
+      tags:
+        - Favourites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "12345"
+      responses:
+        "200":
+          description: Product removed from favourites successfully.
+        "500":
+          description: Internal server error.
   /customer/cancel_order/{order_id}:
     post:
       tags:
