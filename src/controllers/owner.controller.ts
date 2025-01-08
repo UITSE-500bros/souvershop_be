@@ -42,6 +42,9 @@ class OwnerController {
                 };
                 await profileService.updateProfile(user.user_id, updateFields);
             }
+            if (!user) {
+                return res.status(500).json({ message: 'Failed to create employee account' });
+            }
             return res.status(201).json({ message: 'Employee account created successfully' });
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
