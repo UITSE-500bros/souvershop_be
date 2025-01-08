@@ -14,4 +14,5 @@ router.post('/favourite', authMiddleware, customerController.addToFavourites);
 router.delete('/favourite', authMiddleware, customerController.removeFromFavourites);
 router.put('/cancel_order', authMiddleware, customerController.cancelOrder);
 
+router.get('/orders', authMiddleware, customerController.getOrders);
 export default router;

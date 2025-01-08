@@ -10,8 +10,15 @@ class CustomerController {
   async updateProfile(req: AuthenticatedRequest, res) {
     // update customer profile
   }
-  async getOrders(reqreq: AuthenticatedRequest, res) {
-    // get customer orders
+  async getOrders(req: AuthenticatedRequest, res) {
+    const customerId = req.userId;
+    try {
+      const orders = await customerService.getOrders(customerId);
+      return res.status(200).json(orders);
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message
+      });
+    }
   }
   async getOrder(req: AuthenticatedRequest, res) {
     // get customer order

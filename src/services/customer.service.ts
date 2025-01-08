@@ -33,6 +33,11 @@ class CustomerService {
     // UPDATE
   }
 
+  async getOrders(customer_id: string) {
+    const result = await pool.query('SELECT * FROM receipt WHERE customer_id = $1', [customer_id]);
+    return result.rows;
+  }
+
   async cancelOrder(customer_id: string, order_id: string) {
     const orderResult = await pool.query('SELECT * FROM receipt WHERE receipt_id = $1 AND customer_id = $2', [order_id, customer_id]);
     if (orderResult.rows.length === 0) {
