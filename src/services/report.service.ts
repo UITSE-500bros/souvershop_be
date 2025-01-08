@@ -213,17 +213,17 @@ class ReportService {
         (SELECT SUM(product_quantity) FROM product) AS total_quantity
     `;
     const stockReportResult = await pool.query(stockReportQuery);
-    return stockReportResult;
+    return stockReportResult.rows[0];
 
   }
   async getBuyReport() {
     const buyReportQuery = `
       SELECT 
         (SELECT COUNT(*) FROM grn) AS total_purchase,
-        (SELECT SUM(total) FROM grn) AS total_expense;
+        (SELECT SUM(total) FROM grn) AS total_expense
     `;
     const buyReportResult = await pool.query(buyReportQuery);
-    return buyReportResult;
+    return buyReportResult.rows[0];
 
   }
   async getSellBuyReport() {
