@@ -198,7 +198,7 @@ class ReportService {
         WHERE product_quantity <= 12
         ORDER BY product_quantity ASC;
     `;
-    console.log(lowInventoryReportQuery)
+
     const lowInventoryReportResult = await pool.query(lowInventoryReportQuery);
     if (lowInventoryReportResult.rows.length === 0) {
       return { low_inventory_count: 0 };
@@ -209,7 +209,7 @@ class ReportService {
   async getStockReport() {
     const stockReportQuery = `
       SELECT 
-        (SELECT COUNT(*) FROM product) AS product_count,
+        (SELECT SUM(*) FROM product) AS total_products,
         (SELECT
               SUM((product->>'quantity')::int) AS total_shipping_products
           FROM
@@ -230,7 +230,13 @@ class ReportService {
     const buyReportQuery = `
       SELECT 
         (SELECT COUNT(*) FROM grn) AS total_purchase,
-        (SELECT SUM(total) FROM grn) AS total_expense
+        (SELECT SUM(total) FROM grn) AS total_expense,
+        (SELECT SUM(total) FROM receipt
+          WHERE status = 'Đã huỷ'
+        ) AS total_canceled,
+        (SELECT SUM(total) FROM receipt
+          WHERE status = 'Đã trả hàng'
+        ) AS total_returned
     `;
     const buyReportResult = await pool.query(buyReportQuery);
     return buyReportResult.rows[0];
@@ -238,9 +244,22 @@ class ReportService {
   }
   async getSellBuyReport() {
 
+    const sellBuyReportQuery = `
+      
+    `;
+    const sellBuyReportResult = await pool.query(sellBuyReportQuery);
+    return sellBuyReportResult.rows[0];
+
 
   }
   async getOrdersReport() {
+    const ordersReportQuery = `
+      SELECT 
+        (SELECT COUNT(*) FROM receipt) AS total_orders,
+        (SELECT SUM(total) FROM receipt) AS total_revenue
+    `;
+    const ordersReportResult = await pool.query(ordersReportQuery);
+    return ordersReportResult.rows[0];
 
 
   }
