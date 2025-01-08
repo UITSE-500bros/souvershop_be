@@ -312,56 +312,66 @@ class ReportService {
   async getBestProductReport() {
     const bestProductReportQuery = `
       WITH product_sales AS (
-        SELECT
-            p.product_id,
-            p.product_name,
-            p.product_selling_price,
-            SUM(o.total) AS total_revenue,
-            COUNT(o.receipt_id) AS times_sold,
-            p.percentage_sale
-        FROM
-            public.product p
-        LEFT JOIN
-            LATERAL (
-                SELECT
-                    receipt_id,
-                    total,
-                    UNNEST(product_list)::jsonb ->> 'product_id' AS product_id_in_order
-                FROM
-                    public.receipt
-            ) o ON o.product_id_in_order::uuid = p.product_id  -- Ensure casting to UUID
-        GROUP BY
-            p.product_id, p.product_name, p.product_selling_price, p.percentage_sale
-    ),
-    ranked_products AS (
-        SELECT
-            product_id,
-            product_name,
-            product_selling_price,
-            total_revenue,
-            times_sold,
-            percentage_sale,
-            RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank,
-            RANK() OVER (ORDER BY times_sold DESC) AS sales_rank
-        FROM
-            product_sales
-    )
-    SELECT
-        product_id,
-        product_name,
-        product_selling_price,
-        total_revenue,
-        times_sold,
-        percentage_sale,
-        revenue_rank,
-        sales_rank
-    FROM
-        ranked_products
-    WHERE
-        sales_rank BETWEEN 1 AND 3
-    ORDER BY
-        sales_rank, revenue_rank
-    LIMIT 7;
+          SELECT
+              p.product_id,
+              p.product_name,
+              p.product_selling_price,
+              p.product_quantity AS remaining_quantity,
+              c.category_name,
+              SUM(o.total) AS total_revenue,
+              COUNT(o.receipt_id) AS times_sold,
+              p.percentage_sale
+          FROM
+              public.product p
+          LEFT JOIN
+              public.category c ON p.category_id = c.category_id -- Join to get category name
+          LEFT JOIN
+              LATERAL (
+                  SELECT
+                      receipt_id,
+                      total,
+                      UNNEST(product_list)::jsonb ->> 'product_id' AS product_id_in_order
+                  FROM
+                      public.receipt
+              ) o ON o.product_id_in_order::uuid = p.product_id -- Ensure casting to UUID
+          GROUP BY
+              p.product_id, p.product_name, p.product_selling_price, p.product_quantity,
+              p.percentage_sale, c.category_name
+      ),
+      ranked_products AS (
+          SELECT
+              product_id,
+              product_name,
+              product_selling_price,
+              remaining_quantity,
+              category_name,
+              total_revenue,
+              times_sold,
+              percentage_sale,
+              RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank,
+              RANK() OVER (ORDER BY times_sold DESC) AS sales_rank
+          FROM
+              product_sales
+      )
+      SELECT
+          product_id,
+          product_name,
+          product_selling_price,
+          remaining_quantity,
+          category_name,
+          total_revenue,
+          times_sold,
+          percentage_sale,
+          revenue_rank,
+          sales_rank
+      FROM
+          ranked_products
+      WHERE
+          times_sold > 0 -- Exclude products with no sales
+      ORDER BY
+          sales_rank, revenue_rank
+      LIMIT 7;
+
     `;
     const bestProductReportResult = await pool.query(bestProductReportQuery);
     return bestProductReportResult.rows;
