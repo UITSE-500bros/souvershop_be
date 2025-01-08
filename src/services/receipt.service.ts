@@ -127,12 +127,12 @@ class ReceiptService {
         if (error) throw error;
         return data;
     }
-    async updateOrderStatus(orderId, status) {
+    async updateOrderStatus(orderId: string, status: string) {
         const orderQuery = await supabase.from("receipt").select().eq("receipt_id", orderId);
         if (orderQuery.error) throw orderQuery.error;
 
         await pool.query(
-            'UPDATE receipt SET order_status = $1 WHERE receipt_id = $2',
+            'UPDATE receipt SET status = $1 WHERE receipt_id = $2',
             [status, orderId]
         );
 
