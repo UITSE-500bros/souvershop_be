@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import ReviewService from '../services/review.service';
+import { AuthenticatedRequest } from '../middleware/authorizeRole';
 
 export class ReviewController {
   async getAllReviews(req: Request, res: Response): Promise<Response> {
@@ -12,9 +13,9 @@ export class ReviewController {
     }
   }
   
-  async getReviewsByCustomerId(req: Request, res: Response): Promise<Response> {
+  async getReviewsByCustomerId(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
-      const { customer_id } = req.params;
+      const customer_id = req.userId
       const { sortBy, order } = req.query;
       const reviews = await ReviewService.getReviewsByCustomerId(
         customer_id,
@@ -42,9 +43,10 @@ export class ReviewController {
     }
   }
 
-  async createReview(req: Request, res: Response): Promise<Response> {
+  async createReview(req: AuthenticatedRequest, res: Response): Promise<Response> {
+    const customer_id = req.userId;
     try {
-      const { receipt_id, customer_id, product_id, review_text, rating } = req.body;
+      const { receipt_id, product_id, review_text, rating } = req.body;
       const review = await ReviewService.createReview(
         receipt_id, customer_id, product_id, review_text, rating
       );
@@ -54,9 +56,10 @@ export class ReviewController {
     }
   }
 
-  async updateReview(req: Request, res: Response): Promise<Response> {
+  async updateReview(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
-      const { customer_id, product_id, receipt_id } = req.params;
+      const customer_id = req.userId
+      const { product_id, receipt_id } = req.params;
       const { review_text, rating } = req.body;
       const review = await ReviewService.updateReview(customer_id, product_id, receipt_id, review_text, rating);
       return res.status(200).json(review);
@@ -74,9 +77,10 @@ export class ReviewController {
     }
   }
 
-  async deleteReview(req: Request, res: Response): Promise<Response> {
+  async deleteReview(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
-      const { customer_id, product_id, receipt_id } = req.params;
+      const customer_id = req.userId
+      const {  product_id, receipt_id } = req.params;
       await ReviewService.deleteReview(customer_id, product_id, receipt_id);
       return res.status(204).send();
     } catch (err: any) {

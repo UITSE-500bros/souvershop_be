@@ -806,6 +806,8 @@ paths:
       summary: Create a new review
       description: Create a new review
       operationId: createReview
+      security:
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -879,14 +881,6 @@ paths:
       operationId: getReviewsByCustomerId
       security:
         - BearerAuth: []
-      parameters:
-        - name: customer_id
-          in: path
-          description: ID of customer to return
-          required: true
-          schema:
-            type: string
-            format: uuid
       responses:
         "200":
           description: successful operation
@@ -932,13 +926,9 @@ paths:
       description: Update a review for a product in a specific receipt by a customer.
       tags:
         - review
+      security:
+        - BearerAuth: []
       parameters:
-        - name: customer_id
-          in: path
-          required: true
-          description: ID of the customer.
-          schema:
-            type: string
         - name: receipt_id
           in: path
           required: true
