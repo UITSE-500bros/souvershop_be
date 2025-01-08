@@ -209,7 +209,7 @@ class ReportService {
   async getStockReport() {
     const stockReportQuery = `
       SELECT 
-        (SELECT SUM(*) FROM product) AS total_products,
+        (SELECT SUM(product_quantity) FROM product) AS total_products,
         (SELECT
               SUM((product->>'quantity')::int) AS total_shipping_products
           FROM
