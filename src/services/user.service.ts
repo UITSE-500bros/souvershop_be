@@ -92,7 +92,7 @@ class UserService {
     async getUsersByRole(role: string) {
         const userQuery = `
             SELECT
-                *
+                user_id,user_name,user_email,user_address,user_phone_number,salary,create_at
                 FROM
                 "user"
                 WHERE
