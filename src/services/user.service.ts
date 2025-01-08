@@ -2,7 +2,7 @@ import { User } from "../models";
 import { pool, supabase } from "../utils";
 
 class UserService {
-    async createUser(user: User , role : string){
+    async createUser(user: User, role: string) {
         const { data, error } = await supabase
             .from('user')
             .insert({
@@ -17,6 +17,32 @@ class UserService {
             console.log(error);
             return null;
         }
+        const res = await this.signUserRole(newUser, role);
+        if (!res) {
+            return null;
+        }
+        return newUser;
+    }
+
+    async createEmployee(user: User, role: string) {
+        const { data, error } = await supabase
+            .from('user')
+            .insert({
+                user_email: user.user_email,
+                user_password: user.user_password,
+                user_name: user.user_name,
+                user_address: user.user_address,
+                user_phone_number: user.user_phone_number,
+                salary: user.staff_salary,
+                create_at: user.created_at,
+                update_at: user.updated_at
+            })
+            .select();
+        if (error) {
+            console.log(error);
+            return null;
+        }
+        const newUser: User = data[0];
         const res = await this.signUserRole(newUser, role);
         if (!res) {
             return null;
@@ -50,7 +76,7 @@ class UserService {
         }
         return data;
     }
-    async getUserByEmail(email: string):Promise<User | null> {
+    async getUserByEmail(email: string): Promise<User | null> {
         let { data: user, error } = await supabase
             .from('user')
             .select('*')
@@ -63,7 +89,7 @@ class UserService {
 
     }
     async getUserByID(user_id: string) {
-        
+
         let { data: user, error } = await supabase
             .from('user')
             .select('*')
@@ -114,7 +140,7 @@ class UserService {
         `;
 
         const response = await pool.query(userQuery);
-        
+
         return response.rows;
     }
 
@@ -125,17 +151,17 @@ class UserService {
                 .update({
                     access_token: tokens.accessToken,
                     refresh_token: tokens.refreshToken,
-                    reset_pass_token: tokens.resetPasToken,  
-                    verify_token: tokens.verifyToken   
+                    reset_pass_token: tokens.resetPasToken,
+                    verify_token: tokens.verifyToken
                 })
                 .eq('user_id', user.user_id);
-    
+
             if (error) {
                 console.error("Error updating tokens:", error);
                 return null;
             }
-    
-            return ;
+
+            return;
         } catch (err) {
             console.error("Unexpected error:", err);
             return null;
@@ -149,12 +175,12 @@ class UserService {
                     user_account_status: status,
                 })
                 .eq('user_id', user.user_id);
-    
+
             if (error) {
                 console.error("Error updating status:", error);
                 return null; // or handle the error as needed
             }
-            return ;
+            return;
         } catch (err) {
             console.error("Unexpected error:", err);
             return null;

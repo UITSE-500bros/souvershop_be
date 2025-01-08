@@ -1086,6 +1086,19 @@ paths:
                   format: email
                   description: The email address of the user
                   example: johndoe@example.com
+                user_phoneNumber:
+                  type: string
+                  description: The phone number of the user
+                  example: 1234567890
+                user_address:
+                  type: string
+                  description: The address of the user
+                  example: 123 Main St, Springfield, IL 62701
+                salary:
+                  type: number
+                  format: int4
+                  description: The salary of the employee
+                  example: 50000
                 file:
                   type: string
                   format: binary
@@ -1265,6 +1278,8 @@ paths:
         "400":
           description: Invalid request
   
+
+
   /receipt/create_payment_url:
     post:
       tags:
