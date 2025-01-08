@@ -58,9 +58,9 @@ class GRNController {
 
     async createGRN(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const creater_id  = req.userId;
-        const { total, product_list } = req.body;
+        const { grn_total, product_list } = req.body;
         try {
-            const newGRN = await GRNService.createGRN(total, creater_id, product_list);
+            const newGRN = await GRNService.createGRN(grn_total, creater_id, product_list);
             return res.status(201).json(newGRN);
         } catch (err: any) {
             return res.status(500).json({ error: 'Failed to create GRN' });
