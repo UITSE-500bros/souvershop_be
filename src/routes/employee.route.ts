@@ -3,5 +3,8 @@ import authMiddleware from '../middleware/authorizeRole';
 import { employeeController } from '../controllers';
 
 
-const router = Router();
-router.post('/update', authMiddleware, employeeController.updateOrderStatus);
+const employeeRouter = Router();
+employeeRouter.post('/update', authMiddleware, employeeController.updateOrderStatus);
+employeeRouter.get('/orders', authMiddleware, employeeController.getOrders);
+
+export default employeeRouter;

@@ -142,6 +142,11 @@ class ReceiptService {
             status: status,
         };
     }
+    async getOrders() {
+        const { data, error } = await supabase.from("receipt").select();
+        if (error) throw error;
+        return data;
+    }
 }
 
 export default new ReceiptService();

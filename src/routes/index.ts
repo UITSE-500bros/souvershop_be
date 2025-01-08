@@ -10,6 +10,7 @@ import bannerRouter from './banner.route'
 import profileRouter from './profile.route'
 import reportRouter from './report.route'
 import customerRouter from './customer.route'
+import employeeRouter from './employee.route';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/banner', bannerRouter);
 router.use('/profile', profileRouter);
 router.use('/report', reportRouter);
 router.use('/customer', customerRouter);
+router.use('/employee', employeeRouter);
 
 export default router;
