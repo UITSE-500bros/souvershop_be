@@ -28,4 +28,6 @@ router.get("/best_sallers", reportController.bestProductReport);
 router.get("/linecharts", reportController.lineChartReport);
 router.get("/inventory-report", reportController.inventoryReport);
 
+router.get("/sales_product", reportController.salesProductReport);
+
 export default router;

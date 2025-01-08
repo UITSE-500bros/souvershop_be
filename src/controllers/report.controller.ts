@@ -134,6 +134,16 @@ class ReportController {
     }
   }
 
+  async salesProductReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getSaleProductReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
 }
 
 const reportController = new ReportController();

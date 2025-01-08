@@ -260,9 +260,55 @@ class ReportService {
     `;
     const ordersReportResult = await pool.query(ordersReportQuery);
     return ordersReportResult.rows[0];
-
-
   }
+
+  async getSaleProductReport() {
+    const saleProductReportQuery = `
+      WITH sold_products AS (
+          SELECT
+              p.product_id,
+              p.product_name,
+              SUM((product_list_element->>'quantity')::int) AS total_sold_quantity,
+              SUM((product_list_element->>'quantity')::int) * p.product_selling_price AS total_revenue
+          FROM
+              public.product p
+          LEFT JOIN public.receipt r
+              ON r.status = 'Đang giao hàng'
+          LEFT JOIN LATERAL
+              unnest(r.product_list) AS product_list_element(product_list_element)
+              ON (product_list_element->>'product_id')::uuid = p.product_id
+          GROUP BY
+              p.product_id, p.product_name, p.product_selling_price
+      ),
+      stock_and_sales AS (
+          SELECT
+              p.product_name,
+              COALESCE(sp.total_sold_quantity, 0) AS total_sold_quantity,
+              p.product_quantity AS stock_remaining,
+              COALESCE(sp.total_revenue, 0) AS total_revenue
+          FROM
+              public.product p
+          LEFT JOIN sold_products sp
+              ON p.product_id = sp.product_id
+      )
+      SELECT
+          product_name,
+          total_sold_quantity,
+          stock_remaining,
+          total_revenue
+      FROM
+          stock_and_sales
+      WHERE
+          total_sold_quantity > 0
+      ORDER BY
+          total_sold_quantity DESC, total_revenue DESC
+      LIMIT 7;
+    `;
+
+    const saleProductReportResult = await pool.query(saleProductReportQuery);
+    return saleProductReportResult.rows;
+  }
+
   async getBestProductReport() {
     const bestProductReportQuery = `
       WITH product_sales AS (
@@ -333,6 +379,8 @@ class ReportService {
     const inventoryReportResult = await pool.query(inventoryReportQuery);
     return inventoryReportResult.rows[0];
   }
+
+  
 
 }
 
