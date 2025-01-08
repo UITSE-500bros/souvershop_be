@@ -166,7 +166,7 @@ class ReportService {
     const revenueReportResult = await pool.query(revenueReportQuery);
     const profitReportResult = await pool.query(profitReportQuery);
     const salesReportResult = await pool.query(totalSalesReportQuery);
-    const costReportResult = salaryResult.rows[0].total_salary +  grn_total.rows[0].total_grn;
+    const costReportResult = salaryResult.rows[0].total_salary + grn_total.rows[0].total_grn;
 
     return {
       total_revenue: revenueReportResult.rows[0].total_revenue,
@@ -210,7 +210,7 @@ class ReportService {
     const stockReportQuery = `
       SELECT 
         (SELECT COUNT(*) FROM product) AS product_count,
-        (SELECT SUM(quantity) FROM product) AS total_quantity;
+        (SELECT SUM(product_quantity) FROM product) AS total_quantity
     `;
     const stockReportResult = await pool.query(stockReportQuery);
     return stockReportResult;

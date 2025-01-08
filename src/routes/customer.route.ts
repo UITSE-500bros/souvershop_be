@@ -12,6 +12,9 @@ router.delete('/cart/:product_id', authMiddleware, customerController.removeFrom
 router.get('/favourite', authMiddleware, customerController.getAllFavourites);
 router.post('/favourite', authMiddleware, customerController.addToFavourites);
 router.delete('/favourite', authMiddleware, customerController.removeFromFavourites);
+
+
+
 router.delete('/cancel_order/:orderId', authMiddleware, customerController.cancelOrder);
 
 router.get('/orders', authMiddleware, customerController.getOrders);
