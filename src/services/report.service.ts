@@ -390,8 +390,45 @@ class ReportService {
     return inventoryReportResult.rows[0];
   }
 
-  
-
+  async getCategoryReport() {
+    const categoryReportQuery = `
+      WITH category_sales AS (
+        SELECT
+            c.category_name,
+            SUM(o.total) AS total_revenue, -- Tổng doanh số (doanh thu)
+            COUNT(o.receipt_id) AS total_orders, -- Tổng số đơn hàng
+            SUM((product_list_element->>'quantity')::int) AS total_sold_quantity -- Tổng số lượng sản phẩm bán được
+        FROM
+            public.category c
+        LEFT JOIN
+            public.product p ON c.category_id = p.category_id
+        LEFT JOIN
+            LATERAL (
+                SELECT
+                    receipt_id,
+                    total,
+                    UNNEST(product_list)::jsonb AS product_list_element
+                FROM
+                    public.receipt
+            ) o ON (product_list_element->>'product_id')::uuid = p.product_id -- Liên kết sản phẩm trong receipt
+        GROUP BY
+            c.category_id, c.category_name
+    )
+    SELECT
+        category_name,
+        total_revenue,
+        total_sold_quantity
+    FROM
+        category_sales
+    WHERE
+        total_sold_quantity > 0 -- Chỉ lấy danh mục có sản phẩm đã bán
+    ORDER BY
+        total_revenue DESC -- Sắp xếp theo doanh số từ cao xuống
+    LIMIT 5;
+    `;
+    const categoryReportResult = await pool.query(categoryReportQuery);
+    return categoryReportResult.rows;
+  }
 }
 
 const reportService = new ReportService();

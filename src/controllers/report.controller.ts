@@ -144,6 +144,15 @@ class ReportController {
     }
   }
 
+  async getCategoryReport(req: Request, res: Response) {
+    try {
+      const report = await ReportService.getCategoryReport();
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
 }
 
 const reportController = new ReportController();
