@@ -122,24 +122,12 @@ class ReceiptService {
         const { data, error } = await supabase
             .from("receipt")
             .update({ transaction_status: status })
-            .eq("receipt_id", orderId)
-            .select() // Ensure this is chained correctly
-            .single();
+            .eq("receipt_id", orderId);
 
         if (error) throw error;
 
-        if (data) {
-            await pool.query(`
-        UPDATE user
-        SET
-            user_level = CASE
-                WHEN user_level < 20 THEN user_level + 5
-                ELSE user_level
-            END
-        WHERE user_id = ${data.customer_id}
-        RETURNING *;
-    `);
-        }
+
+        
 
 
         return data;
