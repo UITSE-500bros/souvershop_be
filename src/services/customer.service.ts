@@ -44,14 +44,14 @@ class CustomerService {
       throw new Error('Order not found');
     }
     const order = orderResult.rows[0];
-    if( order.order_status !== 'Đang chờ xử lý') {
+    if (order.order_status !== 'Đang chờ xử lý') {
       throw new Error('Order cannot be cancelled');
     }
     await pool.query(
       'UPDATE receipt SET order_status = $1 WHERE receipt_id = $2 AND customer_id = $3',
       ['Đã hủy', order_id, customer_id]
     );
-  
+
     return {
       message: 'Order has been successfully cancelled',
       order_id,
@@ -84,7 +84,7 @@ class CustomerService {
         ...product,
         quantity: item.quantity,
       };
-      
+
     }));
 
     return {
@@ -311,11 +311,17 @@ class CustomerService {
 
   }
 
-  async getDiscount(){
+  async getDiscount() {
     const data = await pool.query(`
-        SELECT * from discount
+        SELECT id, discount_value, discount_name
+        FROM public.discount
+        WHERE NOT EXISTS (
+          SELECT 1
+          FROM jsonb_array_elements_text(isused) AS used_user_id
+          WHERE used_user_id::uuid = '<user_id>'
+        );
         `)
-      return data;
+    return data;
   }
 }
 
