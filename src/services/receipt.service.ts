@@ -129,7 +129,7 @@ class ReceiptService {
         if (error) throw error;
 
         if (data) {
-            const response = await pool.query(`
+            await pool.query(`
         UPDATE user
         SET
             user_level = CASE
