@@ -1938,6 +1938,20 @@ paths:
           description: Product removed from favourites successfully.
         "500":
           description: Internal server error.
+  /customer/discounts:
+    get:
+      summary: get all discounts
+      description: 
+      tags:
+        - Favourites
+      security:
+        - BearerAuth: []
+        
+      responses:
+        "200":
+          description: Product removed from favourites successfully.
+        "500":
+          description: Internal server error.v
 
   /product/discountevent:
     put:
