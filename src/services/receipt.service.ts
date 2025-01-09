@@ -22,19 +22,19 @@ class ReceiptService {
                             .select("product_quantity")
                             .eq("product_id", product_id)
                             .single();
-            
+
                         if (selectError) {
                             console.error(`Product not found with ID: ${product_id}`);
                             return; // Skip this product if not found
                         }
-            
+
                         const newQuantity = productData.product_quantity - quantity;
-            
+
                         const { error: updateError } = await supabase
                             .from("product")
                             .update({ product_quantity: newQuantity })
                             .eq("product_id", product_id);
-            
+
                         if (updateError) throw updateError;
                     } catch (err) {
                         console.error(`Error updating product with ID ${product_id}:`, err);
@@ -50,7 +50,7 @@ class ReceiptService {
         }
     }
 
-    async updateOrder(orderId :string, responseCode: string) {
+    async updateOrder(orderId: string, responseCode: string) {
         const status = responseCode === "00" ? "Transaction successful" : "Transaction error";
 
         if (responseCode !== "00") {
@@ -122,9 +122,26 @@ class ReceiptService {
         const { data, error } = await supabase
             .from("receipt")
             .update({ transaction_status: status })
-            .eq("receipt_id", orderId);
+            .eq("receipt_id", orderId)
+            .select() // Ensure this is chained correctly
+            .single();
 
         if (error) throw error;
+
+        if (data) {
+            const response = await pool.query(`
+        UPDATE user
+        SET
+            user_level = CASE
+                WHEN user_level < 20 THEN user_level + 5
+                ELSE user_level
+            END
+        WHERE user_id = ${data.user_id} -- Replace this with the correct field
+        RETURNING *;
+    `);
+        }
+
+
         return data;
     }
     async updateOrderStatus(orderId: string, status: string) {
