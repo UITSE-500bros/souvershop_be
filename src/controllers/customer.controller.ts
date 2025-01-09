@@ -128,7 +128,7 @@ class CustomerController {
   async getDiscount(req:AuthenticatedRequest, res: Response) {
     try {
       const result = await customerService.getDiscount();
-      return res.status(200).json({ message: 'Product removed from favourites' });
+      return res.status(200).json(result);
     } catch (err: any) {
       return res.status(500).json({ error: err.message });
     }
