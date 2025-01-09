@@ -310,6 +310,13 @@ class CustomerService {
     );
 
   }
+
+  async getDiscount(){
+    const data = await pool.query(`
+        SELECT * from discount
+        `)
+      return data;
+  }
 }
 
 const customerService = new CustomerService();

@@ -28,6 +28,18 @@ class MailService {
             html: template
         });
     }
+
+    async sendDiscount(email:string, discount_name:string){
+        await transporter.sendMail({
+            from: process.env.PROJECT_MAIL,
+            to: email,
+            subject: 'Welcome to Souvershop',
+            html: `
+                Discount code : ${discount_name}
+            
+            `
+        })
+    }
 }
 const mailService = new MailService();
 export default mailService;

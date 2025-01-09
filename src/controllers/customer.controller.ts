@@ -124,6 +124,15 @@ class CustomerController {
       return res.status(500).json({ error: err.message });
     }
   }
+
+  async getDiscount(req:AuthenticatedRequest, res: Response) {
+    try {
+      const result = await customerService.getDiscount();
+      return res.status(200).json({ message: 'Product removed from favourites' });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 const customerController = new CustomerController();

@@ -120,7 +120,8 @@ class AuthController {
         return res.status(400).json({ message: 'Email already verified' })
       }
       await userService.updateStatus(user, 'verified');
-      await userService.updateUserTokens(user, { verifyToken: '' });
+
+      await mailService.sendDiscount(user.user_email, 'CUSDISCOUNT')
       return res.status(200).json({ message: 'Email verified successfully' })
     }
     return res.status(400).json({ message: 'Invalid token' })
