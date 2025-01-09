@@ -1938,9 +1938,11 @@ paths:
           description: Product removed from favourites successfully.
         "500":
           description: Internal server error.
+  
+  
   /customer/discounts:
     get:
-      summary: get all discounts
+      summary: get all discounts available
       description: 
       tags:
         - Favourites
