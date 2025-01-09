@@ -321,7 +321,7 @@ class CustomerService {
           WHERE used_user_id::uuid = '${userId}'
         );
         `)
-    return data;
+    return data.rows;
   }
 }
 
