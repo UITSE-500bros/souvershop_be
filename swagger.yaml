@@ -1938,6 +1938,81 @@ paths:
           description: Product removed from favourites successfully.
         "500":
           description: Internal server error.
+
+  /product/discountevent:
+    put:
+      summary: "Create a Discount Event"
+      description: "This endpoint allows authorized users to create a discount event."
+      tags:
+        - Discount Events
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discount_value:
+                  type: number
+                  description: "The value of the discount (e.g., 10 for 10%)."
+                  example: 10
+                event_name:
+                  type: string
+                  description: "The name of the discount event."
+                  example: "Holiday Sale"
+                begin:
+                  type: string
+                  format: date-time
+                  description: "The start time of the discount event in ISO 8601 format."
+                  example: "2025-01-01T00:00:00Z"
+                end:
+                  type: string
+                  format: date-time
+                  description: "The end time of the discount event in ISO 8601 format."
+                  example: "2025-01-07T23:59:59Z"
+              required:
+                - discount_value
+                - event_name
+                - begin
+                - end
+      responses:
+        "200":
+          description: "Discount event created successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: "The unique ID of the created discount event."
+                    example: "12345"
+                  discount_value:
+                    type: number
+                    description: "The value of the discount."
+                    example: 10
+                  event_name:
+                    type: string
+                    description: "The name of the discount event."
+                    example: "Holiday Sale"
+                  begin:
+                    type: string
+                    format: date-time
+                    description: "The start time of the discount event."
+                    example: "2025-01-01T00:00:00Z"
+                  end:
+                    type: string
+                    format: date-time
+                    description: "The end time of the discount event."
+                    example: "2025-01-07T23:59:59Z"
+        "401":
+          description: "Unauthorized. Authentication failed or token not provided."
+        "400":
+          description: "Bad request. Invalid input provided."
+        "500":
+          description: "Internal server error."
   /customer/cancel_order/{order_id}:
     post:
       tags:

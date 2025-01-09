@@ -3,6 +3,8 @@ import { UpdateFields } from '../services/profile.service';
 import * as xlsx from 'xlsx';
 import { employeeService, profileService, userService } from '../services';
 import { User } from '../models';
+import { AuthenticatedRequest } from '../type';
+import ownerservice from '../services/owner.service';
 
 class OwnerController {
     async createEmployeeAccount(req: Request, res: Response) {
@@ -227,6 +229,19 @@ class OwnerController {
             });
         } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+    async createDiscount(req:AuthenticatedRequest, res: Response) {
+        try {
+            const {discount_value, event_name, begin, end} = req.body;
+
+            const result = await ownerservice.createDiscountevent(
+                discount_value, event_name, begin, end
+            );
+            return res.status(200).json(result);
+
+        } catch (error) {
+            throw (error)
         }
     }
 
