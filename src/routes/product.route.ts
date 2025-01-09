@@ -11,9 +11,10 @@ router.post('/', productController.createProduct);
 router.put('/:product_id', productController.updateProduct);
 router.delete('/:product_id', productController.deleteProduct);
 router.get('/search/:product_name', productController.searchProductByName);
+router.put('/discountevent', authMiddleware, ownerController.createDiscount);
 router.get('/lookup', productController.getProductforLookup);
 router.get('/:product_id',authMiddleware, productController.getProductById);
 router.get('/',authMiddleware, productController.getAllProducts);
-router.put('/discountevent', authMiddleware, ownerController.createDiscount);
+
 
 export default router;
