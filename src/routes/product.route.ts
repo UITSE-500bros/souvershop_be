@@ -8,7 +8,7 @@ router.get('/search_random', productController.getRandomProduct);
 router.get('/inventory', productController.getAllInventories);
 router.get('/inventory/:product_id', productController.getInventoryByProductId);
 router.post('/', productController.createProduct);
-router.put('/discountevent', authMiddleware, ownerController.createDiscount);
+router.put('/discountevent', ownerController.createDiscount);
 router.put('/:product_id', productController.updateProduct);
 router.delete('/:product_id', productController.deleteProduct);
 router.get('/search/:product_name', productController.searchProductByName);
