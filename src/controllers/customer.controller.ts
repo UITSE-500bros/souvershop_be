@@ -127,7 +127,8 @@ class CustomerController {
 
   async getDiscount(req:AuthenticatedRequest, res: Response) {
     try {
-      const result = await customerService.getDiscount();
+      const customerId = req.userId
+      const result = await customerService.getDiscount(customerId);
       return res.status(200).json(result);
     } catch (err: any) {
       return res.status(500).json({ error: err.message });

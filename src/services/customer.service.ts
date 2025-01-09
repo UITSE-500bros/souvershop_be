@@ -311,14 +311,14 @@ class CustomerService {
 
   }
 
-  async getDiscount() {
+  async getDiscount(userId: string) {
     const data = await pool.query(`
         SELECT id, discount_value, discount_name
         FROM public.discount
         WHERE NOT EXISTS (
           SELECT 1
           FROM jsonb_array_elements_text(isused) AS used_user_id
-          WHERE used_user_id::uuid = '<user_id>'
+          WHERE used_user_id::uuid = '${userId}'
         );
         `)
     return data;
