@@ -136,7 +136,7 @@ class ReceiptService {
                 WHEN user_level < 20 THEN user_level + 5
                 ELSE user_level
             END
-        WHERE user_id = ${data.user_id} -- Replace this with the correct field
+        WHERE user_id = ${data.customer_id}
         RETURNING *;
     `);
         }
