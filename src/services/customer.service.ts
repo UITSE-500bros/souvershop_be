@@ -325,7 +325,7 @@ class CustomerService {
   }
   async getLevel(user_id: string) {
     const data = await pool.query(
-      `SELECT user_level from user WHERE used_user_id::uuid = ${user_id}`
+      `SELECT user_level from user WHERE user_id = ${user_id}`
     )
     return data.rows[0];
   }
