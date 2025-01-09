@@ -323,6 +323,12 @@ class CustomerService {
         `)
     return data.rows;
   }
+  async getLevel(user_id: string) {
+    const data = await pool.query(
+      `SELECT user_level from user WHERE used_user_id::uuid = '${user_id}`
+    )
+    return data.rows[0];
+  }
 }
 
 const customerService = new CustomerService();

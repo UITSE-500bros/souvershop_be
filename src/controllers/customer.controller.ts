@@ -134,6 +134,15 @@ class CustomerController {
       return res.status(500).json({ error: err.message });
     }
   }
+  async getLevel(req:AuthenticatedRequest, res: Response){
+    try {
+      const customerId = req.userId
+      const result = await customerService.getLevel(customerId);
+      return res.status(200).json(result);
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 const customerController = new CustomerController();

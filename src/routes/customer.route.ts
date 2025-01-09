@@ -6,6 +6,8 @@ const router = Router();
 
 router.get('/cart', authMiddleware, customerController.getAllCartItems);
 router.get('/discounts', authMiddleware, customerController.getDiscount);
+router.get('/level', authMiddleware, customerController.getLevel);
+
 router.post('/cart', authMiddleware, customerController.addToCart);
 router.put('/cart/:product_id', authMiddleware, customerController.editCartItem);
 router.delete('/cart/:product_id', authMiddleware, customerController.removeFromCart);
